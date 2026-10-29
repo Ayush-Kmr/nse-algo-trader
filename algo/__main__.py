@@ -7,7 +7,8 @@ import os
 import sys
 
 from . import backtest as bt
-from .data import YahooSource
+from . import experiments as ex
+from .data import YahooSource, load_history, save_history
 from .engine import Engine, new_state
 from .notify import event_notifier, telegram
 from .report import append_journal, daily_markdown
@@ -98,10 +99,38 @@ def cmd_eod(a, cfg) -> int:
     return 0
 
 
+CACHE = os.path.join(ROOT, "data", "cache", "history.json")
+
+
+def get_history(cfg: dict, range_: str, refresh: bool) -> dict:
+    symbols = cfg["universe"] + [cfg["regime"]["index"]]
+    if not refresh and os.path.exists(CACHE):
+        hist = load_history(CACHE)
+        if all(s in hist for s in symbols):
+            print("using cached history (%s); --refresh to refetch" % os.path.relpath(CACHE, ROOT))
+            return hist
+    print("fetching %s of 5-minute bars for %d symbols + index..." % (range_, len(cfg["universe"])))
+    hist = YahooSource().history(symbols, range_)
+    save_history(CACHE, hist)
+    return hist
+
+
+def cmd_experiments(a, cfg) -> int:
+    hist = get_history(cfg, a.range, a.refresh)
+    rows = ex.run_all(cfg, hist, ex.load_variants(os.path.join(ROOT, "experiments.json")),
+                      exclude_date=now_ist().date())
+    md = ex.to_markdown(rows, rows[0]["report"])
+    print(md)
+    path = os.path.join(ROOT, "reports", "experiments-latest.md")
+    with open(path, "w") as fh:
+        fh.write(md)
+    print("wrote %s" % os.path.relpath(path, ROOT))
+    return 0
+
+
 def cmd_backtest(a, cfg) -> int:
     index = cfg["regime"]["index"]
-    print("fetching %s of 5-minute bars for %d symbols + index..." % (a.range, len(cfg["universe"])))
-    hist = YahooSource().history(cfg["universe"] + [index], a.range)
+    hist = get_history(cfg, a.range, a.refresh)
     res = bt.run(cfg, hist, index, exclude_date=now_ist().date())
     rep = bt.split_report(res)
     md = bt.to_markdown(rep, cfg)
@@ -136,10 +165,15 @@ def main(argv=None) -> int:
     b = sub.add_parser("backtest", help="replay history through the engine, net of costs")
     b.add_argument("--range", default="60d")
     b.add_argument("--out", default=os.path.join(ROOT, "reports", "backtest-latest.md"))
+    b.add_argument("--refresh", action="store_true", help="refetch instead of using data/cache")
+    e = sub.add_parser("experiments", help="run every variant in experiments.json on the same data")
+    e.add_argument("--range", default="60d")
+    e.add_argument("--refresh", action="store_true")
     sub.add_parser("status")
     a = p.parse_args(argv)
     cfg = load_cfg(a.config)
-    return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "status": cmd_status}[a.cmd](a, cfg)
+    return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
+            "status": cmd_status}[a.cmd](a, cfg)
 
 
 if __name__ == "__main__":

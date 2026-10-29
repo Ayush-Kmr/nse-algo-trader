@@ -57,6 +57,7 @@ stop fills at the open; square-off is a marketable limit, not a market order.
 ```bash
 python3 -m unittest discover -s tests -t .       # offline tests
 python3 -m algo backtest                           # 60 days, net of costs
+python3 -m algo experiments                        # every variant in experiments.json, same data
 python3 -m algo tick --now "2026-10-29 10:15"      # one step at a pinned time
 python3 -m algo status
 python3 -m algo eod
@@ -68,8 +69,8 @@ Python 3.9+, standard library only. Nothing to install.
 
 See `reports/backtest-latest.md`. The first run (2026-10-29, 59 sessions, 25 Nifty names) **lost money
 net of costs**, and charges were about twice the gross loss. That is the point of the backtest gate:
-no strategy here has shown an edge yet. Change one idea at a time and re-run; do not tune parameters
-until the backtest looks good — that only fits the past.
+no strategy here has shown an edge yet. A second round tested 12 pre-registered variants (exits,
+filters, ranges): all lost in-sample. Details and next ideas: `docs/RESEARCH_LOG.md`.
 
 ## Why this cannot place real orders (yet)
 

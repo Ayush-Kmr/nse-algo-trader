@@ -68,6 +68,21 @@ def by_day(bars: list) -> dict:
     return dict(out)
 
 
+def save_history(path: str, history: dict) -> None:
+    import os
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    rows = {s: [[b.ts.isoformat(), b.open, b.high, b.low, b.close, b.volume, b.minutes] for b in bars]
+            for s, bars in history.items()}
+    with open(path, "w") as fh:
+        json.dump(rows, fh)
+
+
+def load_history(path: str) -> dict:
+    with open(path) as fh:
+        rows = json.load(fh)
+    return {s: [Bar(datetime.fromisoformat(r[0]), *r[1:]) for r in bars] for s, bars in rows.items()}
+
+
 class YahooSource:
     def __init__(self, pause: float = 0.3):
         self.pause = pause

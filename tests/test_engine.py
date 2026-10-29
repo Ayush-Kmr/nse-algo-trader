@@ -129,3 +129,40 @@ class BacktestTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StopRatchetTests(unittest.TestCase):
+    def setUp(self):
+        self.b = PaperBroker(CostModel(cfg()["costs"]), 0.05, 0.05)
+
+    def pos(self):
+        return Position("X", "orb", 10, 100.0, 98.0, 110.0, "", 30.0, "")
+
+    def bar(self, h):
+        return day(D, [(h - 1, h, h - 1.5, h - 0.5, 1)])[0]
+
+    def test_breakeven_after_1r(self):
+        p = self.pos()
+        self.b.update_stop(p, self.bar(101.5), {"breakeven_at_r": 1.0})
+        self.assertEqual(p.stop, 98.0)
+        self.b.update_stop(p, self.bar(102.1), {"breakeven_at_r": 1.0})
+        self.assertEqual(p.stop, 100.0)
+
+    def test_trail_only_ratchets_up(self):
+        p = self.pos()
+        rules = {"trail_start_r": 1.0, "trail_r": 1.0}
+        self.b.update_stop(p, self.bar(104), rules)
+        self.assertEqual(p.stop, 102.0)
+        self.b.update_stop(p, self.bar(101), rules)  # lower high: stop stays
+        self.assertEqual(p.stop, 102.0)
+        self.assertEqual(self.b.check_bar(p, day(D, [(103, 103.5, 101.5, 102, 1)])[0])[1], "trail stop")
+
+
+class RelativeStrengthTests(unittest.TestCase):
+    def test_weak_stock_filtered(self):
+        c = one_symbol_cfg(filters={"min_rs_pct": 5.0})
+        state = new_state(c)
+        sym = day(D, RANGE + BREAK)
+        ev = Engine(c, state).step(sym[-1].end, {"X": sym}, day(D, INDEX_UP[:4]))
+        self.assertEqual(ev[0]["kind"], "FILTER")
+        self.assertEqual(state["positions"], {})

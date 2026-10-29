@@ -42,6 +42,12 @@ class Position:
     entry_ts: str
     planned_risk: float  # rupees lost at the stop, costs included
     last_bar_ts: str
+    initial_stop: float = 0.0  # the stop at entry; `stop` may trail up from here
+    peak: float = 0.0          # highest high since entry
+
+    def __post_init__(self):
+        self.initial_stop = self.initial_stop or self.stop
+        self.peak = self.peak or self.entry_price
 
     def to_dict(self) -> dict:
         return asdict(self)

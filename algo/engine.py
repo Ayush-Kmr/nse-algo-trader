@@ -103,6 +103,7 @@ class Engine:
             if hit:
                 self._close(b.end, pos, *hit)
                 return
+            self.broker.update_stop(pos, b, self.cfg.get("exits", {}))
         self.state["positions"][pos.symbol] = pos.to_dict()
 
         must_flatten = now.time() >= hhmm(self.cfg["square_off"]) or "carried" in self.state["today"]["flags"]
@@ -147,6 +148,11 @@ class Engine:
                 return self._new_events
 
         today = self.state["today"]
+        idx_chg = _pct_from_open(index_bars)
+        min_rs = cfg.get("filters", {}).get("min_rs_pct")
+
+        # Collect every fresh signal first, then take the strongest relative to the index.
+        candidates = []
         for sym in cfg["universe"]:
             if sym in self.state["positions"] or sym in today["symbols"]:
                 continue
@@ -164,21 +170,34 @@ class Engine:
                     self._event(now, "EXPIRED", sym, "%s signal from %s is %d bars old" % (
                         name, sig.bar_ts.strftime("%H:%M"), age))
                     continue
-                v = check_entry(sig, self.account(kill_switch), cfg, self.costs, now)
-                if not v.ok:
-                    self._event(now, "BLOCK", sym, "%s: %s" % (name, "; ".join(v.reasons)),
-                                signal=_sig_dict(sig), **v.details)
+                rs = _pct_from_open(bars) - idx_chg if idx_chg is not None else 0.0
+                if min_rs is not None and rs < min_rs:
+                    self._event(now, "FILTER", sym, "%s: %.2f%% vs index, below %.2f%%" % (name, rs, min_rs))
                     continue
-                pos = self.broker.open(sig, v.qty, v.details["loss_at_stop"])
-                self.state["positions"][sym] = pos.to_dict()
-                today["entries"] += 1
-                today["symbols"].append(sym)
-                self._event(now, "ENTRY", sym, "%s: buy %d @ %.2f, stop %.2f, target %.2f, risk %.2f (%s)" % (
-                    name, v.qty, pos.entry_price, pos.stop, pos.target, pos.planned_risk, sig.reason),
-                    signal=_sig_dict(sig), **v.details)
-                self._manage(now, pos, bars)  # bars after the signal bar, if this tick ran late
+                candidates.append((rs, sym, name, sig, bars))
                 break
+
+        for rs, sym, name, sig, bars in sorted(candidates, key=lambda c: -c[0]):
+            v = check_entry(sig, self.account(kill_switch), cfg, self.costs, now)
+            if not v.ok:
+                self._event(now, "BLOCK", sym, "%s: %s" % (name, "; ".join(v.reasons)),
+                            signal=_sig_dict(sig), **v.details)
+                continue
+            pos = self.broker.open(sig, v.qty, v.details["loss_at_stop"])
+            self.state["positions"][sym] = pos.to_dict()
+            today["entries"] += 1
+            today["symbols"].append(sym)
+            self._event(now, "ENTRY", sym, "%s: buy %d @ %.2f, stop %.2f, target %.2f, risk %.2f, RS %+.2f%% (%s)" % (
+                name, v.qty, pos.entry_price, pos.stop, pos.target, pos.planned_risk, rs, sig.reason),
+                signal=_sig_dict(sig), **v.details)
+            self._manage(now, pos, bars)  # bars after the signal bar, if this tick ran late
         return self._new_events
+
+
+def _pct_from_open(bars) -> Optional[float]:
+    if not bars or bars[0].open <= 0:
+        return None
+    return (bars[-1].close - bars[0].open) / bars[0].open * 100
 
 
 def _sig_dict(sig) -> dict:

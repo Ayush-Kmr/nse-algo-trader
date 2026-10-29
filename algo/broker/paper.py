@@ -27,15 +27,30 @@ class PaperBroker:
 
     def check_bar(self, pos: Position, bar: Bar) -> Optional[Tuple[float, str]]:
         sell = lambda px: round_tick(px * (1 - self.slip), self.tick, "down")
+        kind = "trail stop" if pos.stop > pos.initial_stop else "stop"
         if bar.open <= pos.stop:
-            return sell(bar.open), "stop (gap)"
+            return sell(bar.open), kind + " (gap)"
         if bar.low <= pos.stop:
-            return sell(pos.stop), "stop"
+            return sell(pos.stop), kind
         if bar.open >= pos.target:
             return bar.open, "target (gap)"
         if bar.high >= pos.target:
             return pos.target, "target"
         return None
+
+    def update_stop(self, pos: Position, bar: Bar, rules: dict) -> None:
+        """After a completed bar with no exit: ratchet the stop up, never down. Applies from the next bar."""
+        pos.peak = max(pos.peak, bar.high)
+        r0 = pos.entry_price - pos.initial_stop
+        if r0 <= 0:
+            return
+        be = rules.get("breakeven_at_r")
+        if be and pos.peak >= pos.entry_price + be * r0:
+            pos.stop = max(pos.stop, round_tick(pos.entry_price, self.tick, "up"))
+        ts = rules.get("trail_start_r")
+        if ts and pos.peak >= pos.entry_price + ts * r0:
+            trail = round_tick(pos.peak - rules.get("trail_r", 1.0) * r0, self.tick, "down")
+            pos.stop = max(pos.stop, trail)
 
     def square_off_price(self, last_price: float) -> float:
         # Market orders are banned for algos: this models a marketable limit a few ticks through.

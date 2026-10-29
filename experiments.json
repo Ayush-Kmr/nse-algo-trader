@@ -1,0 +1,24 @@
+{
+  "note": "Pre-registered 2026-10-29 before any variant was run. Add new ideas at the bottom with a date; never delete a failed one.",
+  "variants": [
+    {"name": "baseline", "idea": "config.json as is: ORB + VWAP reclaim, 3R fixed target, Nifty green-day filter", "set": {}},
+    {"name": "target_2r", "idea": "closer 2R target (hit more often); min net R:R relaxed to 1.2 or nothing passes",
+     "set": {"orb": {"target_r": 2.0}, "vwap_reclaim": {"target_r": 2.0}, "min_net_reward_risk": 1.2}},
+    {"name": "breakeven_1r", "idea": "move the stop to entry once price reaches +1R", "set": {"exits": {"breakeven_at_r": 1.0}}},
+    {"name": "trail_1r", "idea": "after +1R, trail the stop 1R below the high; 3R target kept",
+     "set": {"exits": {"trail_start_r": 1.0, "trail_r": 1.0}}},
+    {"name": "let_run", "idea": "5R target, trail 1R below the high after +1.5R: cut losers, let winners run to the close",
+     "set": {"orb": {"target_r": 5.0}, "vwap_reclaim": {"target_r": 5.0}, "exits": {"trail_start_r": 1.5, "trail_r": 1.0}}},
+    {"name": "rs_filter", "idea": "only stocks at least 0.5% stronger than the Nifty since the open",
+     "set": {"filters": {"min_rs_pct": 0.5}}},
+    {"name": "orb_only", "idea": "opening-range breakout alone", "set": {"strategies": ["orb"]}},
+    {"name": "vwap_only", "idea": "VWAP reclaim alone", "set": {"strategies": ["vwap_reclaim"]}},
+    {"name": "orb_30m", "idea": "30-minute opening range instead of 15 (fewer, cleaner breakouts)",
+     "set": {"orb": {"opening_range_minutes": 30}, "entry_window": ["09:45", "14:45"]}},
+    {"name": "orb_low_stop", "idea": "stop at the range low instead of the midpoint (fewer whipsaws, smaller size)",
+     "set": {"orb": {"stop": "low"}}},
+    {"name": "no_regime", "idea": "drop the Nifty green-day filter", "set": {"regime": {"require_green_day": false}}},
+    {"name": "trail_plus_rs", "idea": "the two most plausible ideas a priori, together: trail_1r + rs_filter",
+     "set": {"exits": {"trail_start_r": 1.0, "trail_r": 1.0}, "filters": {"min_rs_pct": 0.5}}}
+  ]
+}
