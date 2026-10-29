@@ -7,21 +7,21 @@ Strategies: orb, vwap_reclaim. Capital 50000, risk 0.5%/trade, daily limit 1.0%.
 
 | slice | trades | win % | net ₹ | gross ₹ | charges ₹ | ₹/trade | avg R | PF | max DD ₹ |
 |---|---|---|---|---|---|---|---|---|---|
-| all | 70 | 31.4 | -5140.76 | -1739.20 | 3401.56 | -73.44 | -0.367 | 0.32 | 5267.77 |
-| in-sample | 42 | 31.0 | -3488.00 | -1438.65 | 2049.35 | -83.05 | -0.414 | 0.29 | 3558.03 |
-| out-of-sample | 28 | 32.1 | -1652.76 | -300.55 | 1352.21 | -59.03 | -0.296 | 0.36 | 1709.74 |
-| strategy: orb | 66 | 33.3 | -4747.61 | -1489.20 | 3258.41 | -71.93 | -0.349 | 0.33 | 4874.62 |
-| strategy: vwap_reclaim | 4 | 0.0 | -393.15 | -250.00 | 143.15 | -98.29 | -0.657 | 0.0 | 393.15 |
+| all | 71 | 31.0 | -5187.99 | -1703.85 | 3484.14 | -73.07 | -0.363 | 0.33 | 5476.00 |
+| in-sample | 43 | 30.2 | -3349.47 | -1247.50 | 2101.97 | -77.89 | -0.388 | 0.33 | 3580.50 |
+| out-of-sample | 28 | 32.1 | -1838.52 | -456.35 | 1382.17 | -65.66 | -0.324 | 0.34 | 1895.50 |
+| strategy: orb | 67 | 32.8 | -4616.61 | -1304.35 | 3312.26 | -68.90 | -0.334 | 0.36 | 4904.62 |
+| strategy: vwap_reclaim | 4 | 0.0 | -571.38 | -399.50 | 171.88 | -142.84 | -0.852 | 0.0 | 571.38 |
 
-Exits: stop 31, square-off 38, target 1
+Exits: stop 32, square-off 38, target 1
 
 Top reasons the risk engine blocked a signal:
 
-- net reward:risk N below N: 236
-- max open positions (N) reached: 205
-- size is zero: stop too far for the risk budget: 129
-- daily loss limit: no room left (lost N, open risk N, limit N): 3
-- charges are N% of the risk budget (max N%): 3
+- net reward:risk N below N: 232
+- max open positions (N) reached: 216
+- size is zero: stop too far for the risk budget: 141
+- daily loss limit: no room left (lost N, open risk N, limit N): 4
+- charges are N% of the risk budget (max N%): 4
 - max trades per day (N) reached: 2
 
 60 days of 5-minute data is a short sample. Treat any result as a hypothesis, not proof.
