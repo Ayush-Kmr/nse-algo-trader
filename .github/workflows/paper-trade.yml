@@ -1,0 +1,50 @@
+name: paper-trade
+
+# Every 5 minutes, Mon-Fri, 04:00-09:55 UTC = 09:30-15:25 IST.
+# The opening range (09:15-09:30) is read back from the bars, so no tick is needed before 09:30.
+# GitHub may start scheduled runs a few minutes late; the engine only acts on completed bars
+# and expires signals older than `max_signal_age_bars`.
+on:
+  schedule:
+    - cron: "*/5 4-9 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: trading-state   # one run at a time touches the state, shared with eod.yml
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # State between runs lives in the Actions cache (newest wins). If the cache is gone, the
+      # copy committed by eod.yml in state/state.json is the fallback.
+      - name: restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: state/state.json
+          key: state-${{ github.run_id }}
+          restore-keys: state-
+
+      - name: tick
+        env:
+          KILL_SWITCH: ${{ vars.KILL_SWITCH }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m algo tick
+
+      - name: save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state/state.json
+          key: state-${{ github.run_id }}

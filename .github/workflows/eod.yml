@@ -1,0 +1,54 @@
+name: end-of-day
+
+# 10:15 UTC = 15:45 IST, after the 15:15 square-off. Writes the daily report, appends the
+# journal and commits both plus the state, so nothing depends on the cache long term.
+on:
+  schedule:
+    - cron: "15 10 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: trading-state
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  eod:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: state/state.json
+          key: state-${{ github.run_id }}
+          restore-keys: state-
+
+      - name: report
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m algo eod
+
+      - name: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f state/state.json reports journal
+          git diff --cached --quiet && exit 0
+          git commit -m "eod: $(date -u +%F) paper report"
+          git push
+
+      - name: save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state/state.json
+          key: state-${{ github.run_id }}

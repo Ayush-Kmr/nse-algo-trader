@@ -1,0 +1,57 @@
+{
+  "mode": "PAPER",
+  "capital": 50000,
+  "risk_per_trade_pct": 0.5,
+  "daily_loss_limit_pct": 1.0,
+  "max_open_positions": 2,
+  "max_trades_per_day": 4,
+  "max_position_pct": 60,
+  "min_net_reward_risk": 1.5,
+  "max_cost_to_risk_pct": 25,
+  "slippage_pct": 0.05,
+  "tick_size": 0.05,
+  "bar_minutes": 5,
+  "session_open": "09:15",
+  "session_close": "15:30",
+  "entry_window": ["09:30", "14:45"],
+  "square_off": "15:15",
+  "max_signal_age_bars": 2,
+  "strategies": ["orb", "vwap_reclaim"],
+  "orb": {
+    "opening_range_minutes": 15,
+    "stop": "mid",
+    "target_r": 3.0,
+    "min_range_pct": 0.3,
+    "max_range_pct": 2.5,
+    "volume_mult": 1.2
+  },
+  "vwap_reclaim": {
+    "start_after": "10:00",
+    "target_r": 3.0,
+    "lookback_bars": 3,
+    "min_stop_pct": 0.2
+  },
+  "regime": {
+    "index": "^NSEI",
+    "require_green_day": true
+  },
+  "universe": [
+    "RELIANCE", "HDFCBANK", "ICICIBANK", "INFY", "TCS", "SBIN", "BHARTIARTL",
+    "ITC", "LT", "AXISBANK", "KOTAKBANK", "HINDUNILVR", "BAJFINANCE", "MARUTI",
+    "SUNPHARMA", "M&M", "TITAN", "ULTRACEMCO", "NTPC", "POWERGRID",
+    "ADANIPORTS", "HCLTECH", "WIPRO", "TATASTEEL", "JSWSTEEL"
+  ],
+  "holidays": [],
+  "costs": {
+    "broker": "angelone",
+    "brokerage_flat": 20,
+    "brokerage_pct": 0.1,
+    "stt_sell_pct": 0.025,
+    "exchange_pct": 0.00297,
+    "sebi_per_crore": 10,
+    "stamp_buy_pct": 0.003,
+    "gst_pct": 18,
+    "verified": false,
+    "note": "Angel One intraday equity rates as understood on 2026-10-29. Verify against the live charge sheet before relying on them."
+  }
+}
