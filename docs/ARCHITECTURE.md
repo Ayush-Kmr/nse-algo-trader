@@ -64,6 +64,9 @@ the offline tests.
 | `algo/experiments.py` | Compares pre-registered variants on the same data |
 | `algo/research.py` | Signal study and walk-forward |
 | `algo/learn.py` | Walk-forward learned signal filter (research only) |
+| `algo/longtest.py` | Almost 3 years of hourly data on about 200 stocks |
+| `algo/survey.py` | Contest of 20 intraday strategies, long and short |
+| `algo/weekly.py` | The Saturday learning run and report |
 | `algo/stability.py` | Stress test of the live path |
 | `algo/chart.py` | Chart images and plain-words alert captions |
 | `algo/demo.py` | Labelled demo and made-up test days for the channel |

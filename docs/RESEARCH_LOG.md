@@ -3,6 +3,21 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-31 — strategy survey: 20 intraday strategies, long and short
+
+`python3 -m algo survey`, report in `reports/survey-latest.md`. List and rules fixed before running:
+₹25,000 a trade, 1.5% stop, out by 15:15, Nov 2023 to Oct 2026, about 200 stocks. To pass, net positive
+on the first two-thirds of sessions, then a corrected lower bound above zero on the last third.
+
+**Result: none passed, and none was net positive in either period.** The best before charges was gap
+and go on up gaps, at +₹1.22 a trade after slippage. Charges are about ₹55 a trade, so every strategy
+loses about ₹50 to ₹120 net. Long and short versions of the same idea both lose, which is what costs
+look like when a market offers no easy direction to exploit at this size.
+
+Not tested, because the data is not here: options, pairs, news and order-book strategies, delivery or
+multi-day holds. Hourly bars cannot show intra-hour timing. Stocks are today's Nifty 200, which
+flatters dip-buying, and it still lost.
+
 ## 2026-10-30 — almost 3 years of hourly data, about 200 stocks
 
 Pass rule set first: 100+ model picks on unseen sessions, and a 95% lower bound on net R above zero.

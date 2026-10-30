@@ -99,3 +99,47 @@ class WeeklyTests(unittest.TestCase):
         rows = longtest.rows(cfg(), {"X": bars})
         self.assertEqual(len(rows), 10)
         self.assertEqual(rows[0]["rel_volume"], 1.0)
+
+
+class SurveyTests(unittest.TestCase):
+    def bars(self, rows):
+        from algo.models import Bar
+        from algo.timeutil import IST
+        from datetime import datetime, timedelta
+        t = datetime(2026, 1, 5, 9, 15, tzinfo=IST)
+        return [Bar(t + timedelta(hours=i), *map(float, r), 1000.0, 60) for i, r in enumerate(rows)]
+
+    def setUp(self):
+        from algo.costs import CostModel
+        self.c = CostModel(cfg()["costs"])
+
+    def test_long_and_short_are_mirror_images_before_costs(self):
+        from algo.survey import trade
+        b = self.bars([(100, 101, 99, 100), (100, 101, 99.5, 100.5), (100.5, 101, 100, 100.5), (101, 101, 101, 101)])
+        self.assertAlmostEqual(trade(b, 0, 1, 0, self.c)[0], 250.0)
+        self.assertAlmostEqual(trade(b, 0, -1, 0, self.c)[0], -250.0)
+
+    def test_stop_limits_the_loss_and_charges_are_taken(self):
+        from algo.survey import trade
+        b = self.bars([(100, 101, 99, 100), (100, 100, 90, 91), (91, 92, 90, 91), (91, 91, 91, 91)])
+        gross, net = trade(b, 0, 1, 0, self.c)
+        self.assertAlmostEqual(gross, -375.0)
+        self.assertLess(net, gross)
+
+    def test_short_stop_is_above_entry(self):
+        from algo.survey import trade
+        b = self.bars([(100, 101, 99, 100), (100, 110, 100, 109), (109, 110, 108, 109), (109, 109, 109, 109)])
+        self.assertAlmostEqual(trade(b, 0, -1, 0, self.c)[0], -375.0)
+
+    def test_streak_counts_consecutive_days(self):
+        from algo.survey import contexts
+        from algo.data import by_day
+        from algo.models import Bar
+        from algo.timeutil import IST
+        from datetime import datetime, timedelta
+        out = []
+        for k, c in enumerate([100, 99, 98, 97, 96]):
+            t = datetime(2026, 1, 5, 9, 15, tzinfo=IST) + timedelta(days=k)
+            out += [Bar(t + timedelta(hours=i), c, c + 1, c - 1, c, 1000.0, 60) for i in range(6)]
+        ctx = dict(contexts(out, {}))
+        self.assertEqual(ctx[sorted(ctx)[-1]]["streak"], -3)
