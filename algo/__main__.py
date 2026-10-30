@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import sys
+import time
 
 from . import backtest as bt
 from . import commands
@@ -212,6 +213,15 @@ def cmd_telegram_demo(a, cfg) -> int:
     return 0 if sent == len(demo.MESSAGES) else 1
 
 
+def cmd_telegram_sim(a, cfg) -> int:
+    start = time.time()
+    events = demo.simulate(cfg, now_ist().date())
+    print("sim: %d events in %.1fs" % (len(events), time.time() - start))
+    for e in events:
+        print("  %s %-8s %s" % (e["time"], e["kind"], e["msg"]))
+    return 0
+
+
 def cmd_commands(a, cfg) -> int:
     print("answered %d command(s)" % commands.process(load_state(cfg), cfg, kill_switch_on()))
     return 0
@@ -252,6 +262,7 @@ def main(argv=None) -> int:
             r.add_argument("--strategies", help="comma-separated, instead of config.json's")
             r.add_argument("--no-regime", action="store_true", help="drop the Nifty green-day filter")
     sub.add_parser("telegram-demo", help="post a labelled walk-through of the channel's messages")
+    sub.add_parser("telegram-sim", help="replay made-up days through the real engine, alerts on")
     sub.add_parser("commands", help="answer waiting Telegram commands now")
     sub.add_parser("status")
     sub.add_parser("telegram-test", help="send one test message and print why it failed, if it did")
@@ -260,7 +271,7 @@ def main(argv=None) -> int:
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
             "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
             "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn,
-            "telegram-demo": cmd_telegram_demo}[a.cmd](a, cfg)
+            "telegram-demo": cmd_telegram_demo, "telegram-sim": cmd_telegram_sim}[a.cmd](a, cfg)
 
 
 if __name__ == "__main__":

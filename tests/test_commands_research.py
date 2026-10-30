@@ -195,3 +195,14 @@ class DemoTests(unittest.TestCase):
         self.assertTrue(all(len(m) < 4000 for m in sent))
         joined = " ".join(sent)
         self.assertFalse(any(s in joined for s in cfg()["universe"]))
+
+
+class SimTests(unittest.TestCase):
+    def test_each_day_ends_the_right_way_and_is_labelled(self):
+        from algo import demo
+        with mock.patch.object(demo, "telegram", return_value=True) as tg:
+            ev = demo.simulate(cfg(), D)
+        exits = [e["msg"].split()[0] for e in ev if e["kind"] == "EXIT"]
+        self.assertEqual(exits, ["stop", "target", "square-off"])
+        self.assertEqual(len([e for e in ev if e["kind"] == "ENTRY"]), 3)
+        self.assertTrue(all("TEST" in c[0][0] for c in tg.call_args_list))

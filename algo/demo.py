@@ -6,8 +6,12 @@ The alert lines use the same formatter as real alerts.
 from __future__ import annotations
 
 import time
+from datetime import date, datetime, timedelta
 
+from .engine import Engine, new_state
+from .models import Bar
 from .notify import format_event, telegram
+from .timeutil import IST
 
 TAG = "🧪 DEMO, NOT A REAL TRADE\n\n"
 
@@ -73,3 +77,45 @@ def run(pause: float = 1.2) -> int:
         sent += 1 if telegram(TAG + m) else 0
         time.sleep(pause)
     return sent
+
+
+def _bars(d, path: list) -> list:
+    """Opening range 09:15-09:30, a breakout at 09:55, then the path as (open, high, low, close)."""
+    rows = [(1150, 1157, 1146, 1147, 9000), (1147, 1150, 1143.8, 1149, 6000), (1149, 1154, 1147.5, 1152, 5000)]
+    rows += [(1152, 1155, 1151, 1154, 4000), (1154, 1156, 1153, 1155, 4000), (1155, 1156.5, 1154, 1155, 4000),
+             (1155, 1156, 1153, 1154, 4000), (1154, 1156, 1153.5, 1155, 4000), (1155, 1158, 1154.5, 1157.6, 9000)]
+    rows += path
+    t0 = datetime(d.year, d.month, d.day, 9, 15, tzinfo=IST)
+    return [Bar(t0 + timedelta(minutes=5 * i), *map(float, r)) for i, r in enumerate(rows)]
+
+
+def _flat(price: float, n: int) -> list:
+    return [(price, price + 1, price - 1, price, 3000)] * n
+
+
+SCENARIOS = [("a stop-loss day", _flat(1159, 20) + [(1159, 1159.5, 1149, 1149.5, 6000)]),
+             ("a target day", _flat(1165, 25) + [(1165, 1183, 1164, 1182, 6000)]),
+             ("a square-off day", _flat(1163, 64))]
+
+
+def simulate(cfg: dict, d: date) -> list:
+    """Replay made-up days through the real engine, ticking as fast as Telegram allows. State stays in
+    memory, so the paper account is never touched."""
+    c = dict(cfg, universe=["EXAMPLE"], strategies=["orb"])
+    alert = lambda ev: telegram("🧪 TEST, NOT A REAL TRADE\n" + format_event(ev))  # noqa: E731
+    events = []
+    for k, (name, path) in enumerate(SCENARIOS, 1):
+        telegram("🧪 TEST %d of %d: %s, using the real engine and risk checks" % (k, len(SCENARIOS), name))
+        state = new_state(c)
+        eng = Engine(c, state, notify=alert)
+        bars = _bars(d, path)
+        index = [Bar(b.ts, 25000.0, 25020.0, 24990.0, 25010.0, 0.0) for b in bars]
+        for i in range(2, len(bars)):
+            now = bars[i].end + timedelta(minutes=2)
+            events += eng.step(now, {"EXAMPLE": bars[:i + 1]}, index[:i + 1], live=True)
+            if state["today"]["trades"]:
+                break
+        t = state["today"]
+        telegram("🧪 TEST result: net ₹%+.2f on %d trade(s), test equity ₹%.2f" % (
+            t["realised"], len(t["trades"]), state["equity"]))
+    return events
