@@ -3,6 +3,14 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-30 — full rerun on freshly downloaded data, plus a stability test
+
+Same result on fresh prices (59 complete sessions): no variant passes. Baseline 66 trades, net
+−₹4,504. Signal study −0.204R gross. Walk-forward 32 unseen trades, −₹2,895. Learned filter picked 2
+of 782 unseen signals, and both lost. Nothing was tuned, because tuning on this data would be
+curve-fitting. `python3 -m algo stability` passes: see `reports/stability-latest.md`. That result is
+about the software only.
+
 ## 2026-10-30 — round 3: a learned signal filter, pre-registered before running
 
 `python3 -m algo learn`: ridge regression on features known at the signal bar, predicting gross R,

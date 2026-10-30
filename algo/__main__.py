@@ -1,4 +1,4 @@
-"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | status | commands | telegram-test"""
+"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | status | commands | telegram-test"""
 from __future__ import annotations
 
 import argparse
@@ -13,6 +13,7 @@ from . import demo
 from . import experiments as ex
 from . import learn
 from . import research
+from . import stability
 from .data import YahooSource, load_history, save_history
 from .engine import Engine, new_state
 from .chart import chart_notifier
@@ -33,10 +34,23 @@ def load_cfg(path: str) -> dict:
 
 
 def load_state(cfg: dict) -> dict:
-    if os.path.exists(STATE):
+    if not os.path.exists(STATE):
+        return new_state(cfg)
+    try:
         with open(STATE) as fh:
-            return json.load(fh)
-    return new_state(cfg)
+            state = json.load(fh)
+        fresh = new_state(cfg)
+        for key, value in fresh.items():
+            state.setdefault(key, value)
+        for key, value in fresh["today"].items():
+            state["today"].setdefault(key, value)
+        return state
+    except (ValueError, KeyError, TypeError, AttributeError) as e:
+        msg = "🚨 [PAPER] the saved state could not be read (%s), so the paper account restarted." % type(e).__name__
+        print(msg)
+        telegram(msg)
+        os.replace(STATE, STATE + ".corrupt")
+        return new_state(cfg)
 
 
 def save_state(state: dict) -> None:
@@ -223,6 +237,13 @@ def cmd_telegram_sim(a, cfg) -> int:
     return 0
 
 
+def cmd_stability(a, cfg) -> int:
+    hist = get_history(cfg, a.range, a.refresh)
+    rep = stability.run(cfg, hist, now_ist().date())
+    _write("stability-latest.md", stability.to_markdown(rep))
+    return 0 if stability.passed(rep) else 1
+
+
 def cmd_commands(a, cfg) -> int:
     print("answered %d command(s)" % commands.process(load_state(cfg), cfg, kill_switch_on()))
     return 0
@@ -255,7 +276,8 @@ def main(argv=None) -> int:
     e.add_argument("--refresh", action="store_true")
     for name, text in (("signals", "study every signal, without portfolio limits"),
                        ("walkforward", "pick variants on past data, score them on unseen data"),
-                       ("learn", "train a signal filter on past days, score it on unseen days")):
+                       ("learn", "train a signal filter on past days, score it on unseen days"),
+                       ("stability", "stress the live path with injected faults")):
         r = sub.add_parser(name, help=text)
         r.add_argument("--range", default="60d")
         r.add_argument("--refresh", action="store_true")
@@ -269,9 +291,18 @@ def main(argv=None) -> int:
     sub.add_parser("telegram-test", help="send one test message and print why it failed, if it did")
     a = p.parse_args(argv)
     cfg = load_cfg(a.config)
+    try:
+        return _dispatch(a, cfg)
+    except Exception as e:
+        if a.cmd in ("tick", "eod") and not a.quiet:  # a crash must reach the channel, not only the log
+            telegram("🚨 [PAPER] %s crashed: %s. Any open paper position is not being managed." % (a.cmd, type(e).__name__))
+        raise
+
+
+def _dispatch(a, cfg) -> int:
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
             "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
-            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn,
+            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability,
             "telegram-demo": cmd_telegram_demo, "telegram-sim": cmd_telegram_sim}[a.cmd](a, cfg)
 
 

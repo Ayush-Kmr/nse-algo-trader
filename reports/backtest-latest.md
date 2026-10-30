@@ -1,6 +1,6 @@
 # Backtest report
 
-Data: 2026-08-04 to 2026-10-29 (60 sessions), 5-minute bars, Yahoo Finance. Out-of-sample from **2026-10-05**.
+Data: 2026-08-05 to 2026-10-29 (59 sessions), 5-minute bars, Yahoo Finance. Out-of-sample from **2026-10-05**.
 Strategies: orb, vwap_reclaim. Capital 50000, risk 0.5%/trade, daily limit 1.0%. All figures **net** of Angel One charges and 0.06% per fill (slippage + half spread).
 
 **Verdict: INCONCLUSIVE: 28 out-of-sample trades, need 30+ before any conclusion.**

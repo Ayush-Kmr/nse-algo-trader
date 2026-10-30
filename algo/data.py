@@ -23,13 +23,13 @@ def yahoo_symbol(sym: str) -> str:
     return sym if sym.startswith("^") else sym + ".NS"
 
 
-def _get_json(path: str, retries: int = 3) -> dict:
+def _get_json(path: str, retries: int = 3, timeout: int = 20) -> dict:
     last = None
     for attempt in range(retries):
         for host in HOSTS:
             req = urllib.request.Request(host + path, headers={"User-Agent": UA})
             try:
-                with urllib.request.urlopen(req, timeout=20) as r:
+                with urllib.request.urlopen(req, timeout=timeout) as r:
                     return json.loads(r.read().decode("utf-8"))
             except Exception as e:  # noqa: BLE001 - any failure: try the other host, then back off
                 last = e
@@ -37,10 +37,10 @@ def _get_json(path: str, retries: int = 3) -> dict:
     raise RuntimeError("yahoo fetch failed: %s" % last)
 
 
-def fetch_bars(sym: str, range_: str = "5d", interval: str = "5m") -> list:
+def fetch_bars(sym: str, range_: str = "5d", interval: str = "5m", retries: int = 3, timeout: int = 20) -> list:
     path = "/v8/finance/chart/%s?range=%s&interval=%s" % (
         urllib.parse.quote(yahoo_symbol(sym)), range_, interval)
-    data = _get_json(path)
+    data = _get_json(path, retries, timeout)
     res = (data.get("chart") or {}).get("result") or []
     if not res:
         return []
@@ -98,7 +98,7 @@ class YahooSource:
         """-> ({symbol: completed bars today}, {symbol: error})"""
         def fetch(s):
             try:
-                return s, fetch_bars(s, "1d", "5m"), None
+                return s, fetch_bars(s, "1d", "5m", retries=2, timeout=8), None  # must fit the 4-minute job
             except Exception as e:  # noqa: BLE001
                 return s, None, str(e)
 

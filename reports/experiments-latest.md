@@ -1,6 +1,6 @@
 # Experiments
 
-Data 2026-08-04 to 2026-10-29 (60 sessions). In-sample before 2026-10-05, out-of-sample from it. All figures net of costs.
+Data 2026-08-05 to 2026-10-29 (59 sessions). In-sample before 2026-10-05, out-of-sample from it. All figures net of costs.
 Pick on **in-sample** ₹/trade; read out-of-sample only as confirmation.
 
 Gate: 30+ out-of-sample trades and a lower bound on avg R above zero, corrected for 12 variants.
@@ -17,7 +17,7 @@ Gate: 30+ out-of-sample trades and a lower bound on avg R above zero, corrected 
 | vwap_only | 8 | 12.5 | -165.08 | -0.691 | 14 | 35.7 | -39.64 | -0.170 | -1875.63 | 1188.53 | INCONCLUSIVE |
 | orb_30m | 43 | 18.6 | -116.69 | -0.549 | 25 | 28.0 | -61.82 | -0.302 | -6563.24 | 3264.74 | INCONCLUSIVE |
 | orb_low_stop | 52 | 30.8 | -70.05 | -0.312 | 29 | 37.9 | -41.41 | -0.184 | -4843.57 | 3451.57 | INCONCLUSIVE |
-| no_regime | 72 | 19.4 | -103.55 | -0.489 | 29 | 31.0 | -66.95 | -0.350 | -9396.98 | 4720.98 | INCONCLUSIVE |
+| no_regime | 71 | 18.3 | -106.00 | -0.501 | 29 | 31.0 | -66.93 | -0.350 | -9466.74 | 4663.59 | INCONCLUSIVE |
 | trail_plus_rs | 32 | 21.9 | -106.09 | -0.456 | 18 | 44.4 | -5.75 | -0.018 | -3498.27 | 2532.52 | INCONCLUSIVE |
 
 ## Ideas

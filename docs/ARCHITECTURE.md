@@ -63,6 +63,10 @@ the offline tests.
 | `algo/backtest.py` | Replays history through the engine; applies the gate |
 | `algo/experiments.py` | Compares pre-registered variants on the same data |
 | `algo/research.py` | Signal study and walk-forward |
+| `algo/learn.py` | Walk-forward learned signal filter (research only) |
+| `algo/stability.py` | Stress test of the live path |
+| `algo/chart.py` | Chart images and plain-words alert captions |
+| `algo/demo.py` | Labelled demo and made-up test days for the channel |
 | `scripts/setup_cronjob.py` | Creates the cron-job.org jobs |
 
 ## What it can do today
@@ -111,6 +115,14 @@ the command.
 - **Sample:** 60 sessions from one market period, and today's Nifty names (survivorship bias).
 - **Tick size** is 0.05 for all stocks. This matters only for live orders; check it first.
 - **Charges** are from Angel One's page and unconfirmed against a contract note.
+
+## Stability
+
+`python3 -m algo stability` replays the history through the tick path, reloading state from JSON on
+every tick, then again with lost ticks, symbols and index data. Clean replays must match the backtest
+trade for trade, and no chaos replay may break a limit. It runs every Saturday. A corrupted state
+file restarts the paper account with an alert, a crash posts to the channel, and a failed chart still
+sends the text.
 
 ## What is deliberately not built
 
