@@ -28,7 +28,7 @@ def run_all(cfg: dict, history: dict, variants: list, exclude_date=None) -> list
     rows = []
     for v in variants:
         c = deep_merge(cfg, v.get("set", {}))
-        rep = bt.split_report(bt.run(c, history, index, exclude_date))
+        rep = bt.split_report(bt.run(c, history, index, exclude_date), tests=len(variants))
         rows.append({"name": v["name"], "idea": v.get("idea", ""), "report": rep})
     return rows
 
@@ -44,15 +44,17 @@ def to_markdown(rows: list, rep0: dict) -> str:
          "Data %s to %s (%d sessions). In-sample before %s, out-of-sample from it. All figures net of costs." % (
              rep0["first_day"], rep0["last_day"], rep0["days"], rep0["oos_from"]),
          "Pick on **in-sample** ₹/trade; read out-of-sample only as confirmation.", "",
-         "| variant | IS trades | IS win% | IS ₹/trade | IS avg R | OOS trades | OOS win% | OOS ₹/trade | OOS avg R | all net ₹ | charges ₹ |",
-         "|---|---|---|---|---|---|---|---|---|---|---|"]
+         "Gate: 30+ out-of-sample trades and a lower bound on avg R above zero, corrected for %d variants." % len(rows), "",
+         "| variant | IS trades | IS win% | IS ₹/trade | IS avg R | OOS trades | OOS win% | OOS ₹/trade | OOS avg R | all net ₹ | charges ₹ | gate |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         rep = r["report"]
         a = rep["all"]
-        L.append("| %s | %s | %s | %s | %s |" % (
+        L.append("| %s | %s | %s | %s | %s | %s |" % (
             r["name"], _cell(rep["in_sample"]), _cell(rep["out_of_sample"]),
             "%+.2f" % a["net_total"] if a.get("trades") else "0",
-            "%.2f" % a["charges_total"] if a.get("trades") else "0"))
+            "%.2f" % a["charges_total"] if a.get("trades") else "0",
+            rep["verdict"].split()[0].rstrip(":")))
     L += ["", "## Ideas", ""]
     L += ["- **%s**: %s" % (r["name"], r["idea"]) for r in rows]
     L.append("")

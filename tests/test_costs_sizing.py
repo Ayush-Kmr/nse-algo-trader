@@ -16,7 +16,7 @@ class CostTests(unittest.TestCase):
         self.assertEqual(ch.brokerage, 40.0)
         self.assertAlmostEqual(ch.stt, 6.19, places=2)
         self.assertAlmostEqual(ch.stamp, 0.75, places=2)
-        self.assertAlmostEqual(ch.total, 55.94, delta=0.05)
+        self.assertAlmostEqual(ch.total, 56.00, delta=0.05)
 
     def test_small_order_pays_percentage_not_flat(self):
         self.assertEqual(float(self.c.brokerage(5000)), 5.0)   # 0.1% of 5,000 < ₹20

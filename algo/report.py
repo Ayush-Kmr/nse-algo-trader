@@ -8,12 +8,21 @@ FIELDS = ["date", "symbol", "strategy", "qty", "entry_price", "exit_price", "ent
           "exit_reason", "gross_pnl", "charges", "net_pnl", "planned_risk", "r_multiple"]
 
 
+def expected_ticks(cfg: dict) -> int:
+    """Scheduled ticks in a full session: one per bar from the entry window's start to the last bar."""
+    def mins(hm):
+        h, m = hm.split(":")
+        return int(h) * 60 + int(m)
+    return (mins(cfg["session_close"]) - mins(cfg["entry_window"][0])) // cfg["bar_minutes"]
+
+
 def daily_markdown(state: dict, cfg: dict) -> str:
     t, d = state["today"], state["date"]
     trades = t["trades"]
     L = ["# %s — paper trading" % d, "",
          "Net P&L **₹%+.2f** on %d trade(s). Equity ₹%.2f (started ₹%s)." % (
-             t["realised"], len(trades), state["equity"], cfg["capital"]), ""]
+             t["realised"], len(trades), state["equity"], cfg["capital"]),
+         "Schedule: %d of %d ticks ran." % (t.get("ticks", 0), expected_ticks(cfg)), ""]
     if trades:
         L += ["| symbol | strategy | qty | entry | exit | reason | gross ₹ | charges ₹ | net ₹ | R |",
               "|---|---|---|---|---|---|---|---|---|---|"]

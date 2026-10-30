@@ -76,8 +76,11 @@ def check_entry(sig: Signal, acct: Account, cfg: dict, costs: CostModel, now: da
     target_ch = costs.round_trip(qty * size.buy_px, qty * sig.target).total
     net_reward = qty * (sig.target - size.buy_px) - target_ch
     net_rr = net_reward / size.loss_at_stop if size.loss_at_stop > 0 else 0.0
-    cost_to_risk = 100 * size.charges_at_stop / risk_budget
+    cost_to_risk = 100 * size.charges_at_stop / budget  # budget, not risk_budget: it may have shrunk today
+    position_value = qty * size.buy_px
 
+    if position_value < cfg.get("min_position_value", 0):
+        reasons.append("position %.0f below the minimum %s" % (position_value, cfg["min_position_value"]))
     if net_rr < cfg["min_net_reward_risk"]:
         reasons.append("net reward:risk %.2f below %.2f" % (net_rr, cfg["min_net_reward_risk"]))
     if cost_to_risk > cfg["max_cost_to_risk_pct"]:
@@ -85,7 +88,7 @@ def check_entry(sig: Signal, acct: Account, cfg: dict, costs: CostModel, now: da
 
     details = {
         "qty": qty,
-        "position_value": round(qty * size.buy_px, 2),
+        "position_value": round(position_value, 2),
         "loss_at_stop": size.loss_at_stop,
         "charges_at_stop": size.charges_at_stop,
         "net_reward_at_target": round(net_reward, 2),

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import copy
 import re
+import statistics
 from datetime import datetime, timedelta
 
 from .data import by_day
@@ -69,6 +70,7 @@ def metrics(trades: list) -> dict:
     gross = [t["gross_pnl"] for t in trades]
     wins = [x for x in net if x > 0]
     losses = [x for x in net if x <= 0]
+    rs = [t["r_multiple"] for t in trades]
     eq, peak, mdd = 0.0, 0.0, 0.0
     for x in net:
         eq += x
@@ -81,7 +83,8 @@ def metrics(trades: list) -> dict:
         "gross_total": round(sum(gross), 2),
         "charges_total": round(sum(t["charges"] for t in trades), 2),
         "expectancy_rs": round(sum(net) / n, 2),
-        "avg_r_net": round(sum(t["r_multiple"] for t in trades) / n, 3),
+        "avg_r_net": round(sum(rs) / n, 3),
+        "avg_r_se": round(statistics.stdev(rs) / n ** 0.5, 4) if n > 1 else None,
         "profit_factor": round(sum(wins) / -sum(losses), 2) if losses and sum(losses) < 0 else None,
         "max_drawdown_rs": round(mdd, 2),
         "exits": _count(t["exit_reason"] for t in trades),
@@ -95,7 +98,7 @@ def _count(xs) -> dict:
     return out
 
 
-def split_report(result: dict, oos_fraction: float = 0.3) -> dict:
+def split_report(result: dict, oos_fraction: float = 0.3, tests: int = 1) -> dict:
     days = result["days"]
     cut = days[int(len(days) * (1 - oos_fraction))] if days else None
     ins = [t for t in result["trades"] if cut is None or t["date"] < cut]
@@ -114,18 +117,26 @@ def split_report(result: dict, oos_fraction: float = 0.3) -> dict:
                          for e in result["events"] if e["kind"] == "BLOCK"
                          for r in e["msg"].split(": ", 1)[-1].split(";")),
     }
-    rep["verdict"] = verdict(rep["out_of_sample"])
+    rep["verdict"] = verdict(rep["out_of_sample"], tests)
     return rep
 
 
-def verdict(oos: dict) -> str:
+def verdict(oos: dict, tests: int = 1) -> str:
+    """A positive average is not enough on 30 trades: the 95% lower bound on avg R must clear zero.
+
+    `tests` is how many variants were tried on this data (Bonferroni), so a lucky one cannot pass.
+    """
     n = oos.get("trades", 0)
     if n < 30:
         return "INCONCLUSIVE: %d out-of-sample trades, need 30+ before any conclusion." % n
     if oos["expectancy_rs"] <= 0:
         return "FAILS the gate: out-of-sample expectancy is %.2f per trade after costs." % oos["expectancy_rs"]
-    return ("PASSES the first gate (positive net out-of-sample expectancy). "
-            "Next gate: 30+ sessions of forward paper trading.")
+    low = oos["avg_r_net"] - statistics.NormalDist().inv_cdf(1 - 0.025 / tests) * oos["avg_r_se"]
+    if low <= 0:
+        return "INCONCLUSIVE: avg %+.3fR is positive but its lower bound is %+.3fR (%d test(s))." % (
+            oos["avg_r_net"], low, tests)
+    return ("PASSES the first gate (out-of-sample avg R lower bound %+.3fR after costs). "
+            "Next gate: 30+ sessions of forward paper trading." % low)
 
 
 def to_markdown(rep: dict, cfg: dict) -> str:

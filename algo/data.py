@@ -9,7 +9,7 @@ import time
 import urllib.parse
 import urllib.request
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .models import Bar
 from .timeutil import IST
@@ -56,9 +56,15 @@ def fetch_bars(sym: str, range_: str = "5d", interval: str = "5m") -> list:
     return bars
 
 
-def completed(bars: list, now: datetime) -> list:
-    """Only bars that have fully closed. The live, still-forming bar is never used."""
-    return [b for b in bars if b.end <= now]
+def completed(bars: list, now: datetime, grace_seconds: int = 0) -> list:
+    """Only bars that have fully closed. The live, still-forming bar is never used.
+
+    The clock alone is not enough: Yahoo can lag, and a bar read too early is never re-read. So a bar
+    counts once a later bar exists, or once `grace_seconds` have passed since it ended.
+    """
+    grace = timedelta(seconds=grace_seconds)
+    return [b for i, b in enumerate(bars)
+            if b.end + grace <= now or (i + 1 < len(bars) and bars[i + 1].ts >= b.end and b.end <= now)]
 
 
 def by_day(bars: list) -> dict:
@@ -87,13 +93,13 @@ class YahooSource:
     def __init__(self, pause: float = 0.3):
         self.pause = pause
 
-    def today(self, symbols, now: datetime):
+    def today(self, symbols, now: datetime, grace_seconds: int = 0):
         """-> ({symbol: completed bars today}, {symbol: error})"""
         out, errors = {}, {}
         for s in symbols:
             try:
                 bars = fetch_bars(s, "1d", "5m")
-                out[s] = [b for b in completed(bars, now) if b.ts.date() == now.date()]
+                out[s] = [b for b in completed(bars, now, grace_seconds) if b.ts.date() == now.date()]
             except Exception as e:  # noqa: BLE001
                 errors[s] = str(e)
             time.sleep(self.pause)

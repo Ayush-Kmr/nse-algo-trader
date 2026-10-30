@@ -7,13 +7,34 @@ Every rupee figure is **net of Angel One charges and slippage**. No real orders 
 
 | when | workflow | what |
 |---|---|---|
-| every 5 min, 09:30–15:25 | `paper-trade` | fetch completed 5-min bars, manage open positions, look for entries, risk-check, paper-fill |
+| every 5 min, 09:32–15:27 | `paper-trade` | fetch completed 5-min bars, manage open positions, look for entries, risk-check, paper-fill |
 | 15:15 | (inside `paper-trade`) | hard square-off of anything still open |
 | 15:45 | `end-of-day` | daily report → `reports/daily/`, trades → `journal/trades.csv`, state committed |
 | Sat 10:00 | `backtest` | replay the last 60 days through the same engine → `reports/backtest-latest.md` |
 | every push | `tests` | offline unit tests |
 
 Your laptop can be off. A failed run (e.g. no data at all) turns red and GitHub emails you.
+
+**The clock is cron-job.org, not GitHub.** GitHub's scheduler ran 1 of 72 ticks on its first day and
+skipped end-of-day. cron-job.org now triggers the runs on IST time, and it emails you after 2 failed
+calls. GitHub's cron remains as a sparse backup: hourly ticks from 09:47 and end-of-day at 16:15.
+
+Telegram is the final check: **no "engine live" message by about 09:45 on a trading day means ticks
+are not running.** A gap of 20+ minutes also alerts, and the end-of-day message shows how many of
+the 72 ticks ran.
+
+## Schedule setup
+
+1. Sign up at [cron-job.org](https://cron-job.org), then create an API key under Settings.
+2. On GitHub, create a [fine-grained token](https://github.com/settings/personal-access-tokens/new):
+   repository access *only this repo*, permission **Actions: Read and write**, nothing else. Pick an
+   expiry and note it: when it lapses, calls fail and cron-job.org emails you.
+3. Run `python3 scripts/setup_cronjob.py` and paste both when prompted. It creates 4 jobs and is safe
+   to rerun. The GitHub token is stored in those jobs at cron-job.org.
+
+To pause everything, disable the jobs in the cron-job.org console. Use `KILL_SWITCH` to stop entries
+but keep managing positions. The schedule costs about 80 Actions minutes a trading day, roughly
+1,700 a month, so check your plan's allowance: a private repo on the free plan gets 2,000.
 
 ## How a trade happens
 
@@ -27,18 +48,20 @@ Yahoo 5-min bars ─► strategy (orb, vwap_reclaim) ─► signal ─► RISK E
 kill switch · entry window 09:30–14:45 · symbol already traded today · max 2 open positions ·
 max 4 trades/day · daily loss limit 1% (losses so far + open risk + this trade) · stop below entry ·
 size ≥ 1 after costs · no leverage (cash) · position ≤ 60% of equity ·
-**net reward:risk ≥ 1.5 after charges** · charges ≤ 25% of the risk budget.
+**net reward:risk ≥ 1.5 after charges** · charges ≤ 25% of this trade's risk budget ·
+position ≥ ₹5,000.
 Exits never pass through it: getting out is never blocked.
 
 **Sizing** (`algo/sizing.py`): largest quantity whose loss at the stop — slippage and *all* charges
 included — fits 0.5% of equity.
 
-**Costs** (`algo/costs.py`): brokerage (₹20 or 0.1%, lower), STT 0.025% sell, exchange 0.00297%,
-SEBI ₹10/crore, stamp 0.003% buy, GST 18%. Rates in `config.json` → `costs`, marked
-`verified: false` until checked against Angel One's live charge sheet.
+**Costs** (`algo/costs.py`): brokerage (₹20 or 0.1%, lower, ₹5 minimum), STT 0.025% sell, exchange
+0.0030699%, SEBI ₹10/crore, stamp 0.003% buy, GST 18%. Rates in `config.json` → `costs`, taken from
+Angel One's charges page and marked `verified: false` until matched to a real contract note.
 
 **Paper fills** are conservative: stop and target in the same bar → the stop wins; a gap through the
-stop fills at the open; square-off is a marketable limit, not a market order.
+stop fills at the open; square-off is a marketable limit, not a market order. If a tick runs late,
+the entry uses the latest close, and a signal that has moved more than 0.3% is dropped, not chased.
 
 **Regime filter**: no new longs while the Nifty 50 index is below its day's open. Missing index data → no entries.
 
@@ -47,10 +70,25 @@ stop fills at the open; square-off is a marketable limit, not a market order.
 - **Kill switch** — GitHub → Settings → Secrets and variables → Actions → *Variables* →
   `KILL_SWITCH` = `1`. Stops new entries from the next run; open positions are still managed and squared
   off. Works from the GitHub mobile app. Delete it or set `0` to resume.
-- **Telegram alerts** (optional) — add secrets `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
-  You get every entry, exit, critical event and the end-of-day summary.
+- **Telegram channel** — see below. You get the morning "engine live", every entry and exit,
+  warnings, schedule gaps, the kill switch and the end-of-day summary.
 - **Run now** — Actions → pick a workflow → *Run workflow*.
 - **Settings** — `config.json` (capital, risk %, limits, universe, strategy parameters).
+
+## Telegram channel setup
+
+1. In Telegram, message **@BotFather**, send `/newbot`, and copy the token. Treat it like a password.
+2. Create a channel, then add your bot as an **admin** with *Post Messages* permission.
+3. Find the chat id. A public channel can use `@channelname`. For a private channel, post a message
+   there and forward it to **@userinfobot**, or read `chat.id` (it starts with `-100`) from
+   `https://api.telegram.org/bot<token>/getUpdates`.
+4. Add both as repo secrets. Each command prompts for the value, so it never lands in shell history:
+   ```bash
+   gh secret set TELEGRAM_BOT_TOKEN -R Ayush-Kmr/nse-algo-trader
+   gh secret set TELEGRAM_CHAT_ID -R Ayush-Kmr/nse-algo-trader
+   ```
+5. Test it: `gh workflow run telegram-test.yml -R Ayush-Kmr/nse-algo-trader`. A failed run shows
+   Telegram's reason, such as `chat not found` (wrong id) or `Forbidden` (bot is not an admin).
 
 ## Local use
 
@@ -78,7 +116,8 @@ All SmartAPI orders count as algo orders under NSE's retail-algo rules: they mus
 **static IP registered with Angel One**, be tagged, and use LIMIT / SL-L only. GitHub's runners have
 changing IPs, so live trading needs a VPS. The gates before `algo/broker/angelone.py` is written:
 
-1. Positive **net** out-of-sample expectancy over 30+ trades in the backtest
+1. **Net** out-of-sample avg R over 30+ trades with its 95% lower bound above zero, corrected for
+   the number of variants tried
 2. 30+ sessions of forward paper trading here, agreeing with the backtest
 3. Static-IP VPS, Angel One compliance confirmed, broker-resident stops + a separate supervisor
 4. Your explicit go-ahead, then minimum size
@@ -88,7 +127,7 @@ Design and audit: `docs/UNATTENDED_DESIGN.md`, `docs/PHASE1_AUDIT.md`.
 ## Limits of the data
 
 Yahoo Finance's chart endpoint is free, unofficial and can lag or rate-limit, especially from cloud
-IPs. GitHub may start scheduled runs several minutes late; signals older than 2 bars are expired
+IPs. Runs can still start a minute or two late; signals older than 2 bars are expired
 rather than chased. NSE holidays are detected from missing index data; add known ones to
 `config.json` → `holidays`.
 

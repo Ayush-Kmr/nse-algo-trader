@@ -5,12 +5,13 @@ All state lives in a plain dict so it can be saved between GitHub Actions runs.
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime
 from typing import Callable, Optional
 
 from .broker.paper import PaperBroker
 from .costs import CostModel
-from .models import Position
+from .models import Position, round_tick
 from .risk import Account, check_entry
 from .strategies import REGISTRY
 from .timeutil import hhmm
@@ -22,7 +23,8 @@ def new_state(cfg: dict) -> dict:
 
 
 def _blank_day() -> dict:
-    return {"trades": [], "realised": 0.0, "entries": 0, "symbols": [], "seen": [], "events": [], "flags": []}
+    return {"trades": [], "realised": 0.0, "entries": 0, "symbols": [], "seen": [], "events": [], "flags": [],
+            "ticks": 0, "last_tick": None}
 
 
 class Engine:
@@ -41,7 +43,7 @@ class Engine:
             ev["data"] = data
         self.state["today"]["events"].append(ev)
         self._new_events.append(ev)
-        if kind in ("ENTRY", "EXIT", "CRITICAL"):
+        if kind in ("ENTRY", "EXIT", "CRITICAL", "WARN", "GAP", "KILL", "START"):
             self.notify(ev)
         return ev
 
@@ -66,6 +68,29 @@ class Engine:
             self.state["today"]["flags"].append("carried")
             self._event(now, "CRITICAL", "*", "positions carried overnight: squaring off at first price",
                         symbols=sorted(self.state["positions"]))
+
+    def _heartbeat(self, now: datetime) -> None:
+        """Live ticks only: count them, say the engine is up, and flag holes in the schedule."""
+        t = self.state["today"]
+        last = t.get("last_tick")
+        t["last_tick"] = now.isoformat()
+        if self._once("start"):
+            self._event(now, "START", "*", "engine live, equity %.2f" % self.state["equity"])
+        since = datetime.fromisoformat(last) if last else datetime.combine(
+            now.date(), hhmm(self.cfg["entry_window"][0]), now.tzinfo)
+        gap = (now - since).total_seconds() / 60
+        if last is None or gap >= 3:  # the backup schedule can land right after a primary tick
+            t["ticks"] = t.get("ticks", 0) + 1
+        if gap > self.cfg.get("max_tick_gap_minutes", 20):
+            self._event(now, "GAP", "*", "no tick for %d minutes: the schedule is running late" % gap)
+
+    def _data_stale(self, now: datetime, bars_by_symbol: dict) -> bool:
+        newest = max((b[-1].end for b in bars_by_symbol.values() if b), default=None)
+        if newest is not None and (now - newest).total_seconds() / 60 <= self.cfg.get("max_data_age_minutes", 15):
+            return False
+        if self._once("stale"):
+            self._event(now, "WARN", "*", "market data is stale: no entries until it recovers")
+        return True
 
     def account(self, kill_switch: bool) -> Account:
         pos = [Position.from_dict(p) for p in self.state["positions"].values()]
@@ -115,16 +140,21 @@ class Engine:
 
     # ---- the step ----------------------------------------------------------------------------
     def step(self, now: datetime, bars_by_symbol: dict, index_bars: Optional[list],
-             kill_switch: bool = False) -> list:
+             kill_switch: bool = False, live: bool = False) -> list:
         self._new_events = []
         self.roll_day(now)
         cfg = self.cfg
+        if live:
+            self._heartbeat(now)
 
         for sym, pd in list(self.state["positions"].items()):
             bars = bars_by_symbol.get(sym)
             if bars is None:
-                if self._once("nodata:%s:%s" % (sym, now.strftime("%H:%M"))):
-                    self._event(now, "WARN", sym, "no data this tick for an open position")
+                if self._once("nodata:" + sym):
+                    self._event(now, "WARN", sym, "no data for an open position: it is not being managed")
+                flatten = now.time() >= hhmm(cfg["square_off"]) or "carried" in self.state["today"]["flags"]
+                if flatten and self._once("noprice:" + sym):
+                    self._event(now, "CRITICAL", sym, "square-off due but no price available")
                 continue
             self._manage(now, Position.from_dict(pd), bars)
 
@@ -135,6 +165,9 @@ class Engine:
 
         start, end = (hhmm(t) for t in cfg["entry_window"])
         if not (start <= now.time() <= end):
+            return self._new_events
+
+        if live and self._data_stale(now, bars_by_symbol):
             return self._new_events
 
         if cfg["regime"].get("require_green_day"):
@@ -170,6 +203,12 @@ class Engine:
                     self._event(now, "EXPIRED", sym, "%s signal from %s is %d bars old" % (
                         name, sig.bar_ts.strftime("%H:%M"), age))
                     continue
+                if age:  # a late tick cannot fill at a price that has gone: use the latest close
+                    drift = (bars[-1].close - sig.entry) / sig.entry * 100
+                    if drift > cfg.get("max_entry_drift_pct", 0.3):
+                        self._event(now, "EXPIRED", sym, "%s: price moved %.2f%% past the signal" % (name, drift))
+                        continue
+                    sig = replace(sig, entry=round_tick(bars[-1].close, cfg["tick_size"]), bar_ts=bars[-1].ts)
                 rs = _pct_from_open(bars) - idx_chg if idx_chg is not None else 0.0
                 if min_rs is not None and rs < min_rs:
                     self._event(now, "FILTER", sym, "%s: %.2f%% vs index, below %.2f%%" % (name, rs, min_rs))

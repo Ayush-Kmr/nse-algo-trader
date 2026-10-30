@@ -34,6 +34,7 @@ class Charges:
 class CostModel:
     def __init__(self, rates: dict):
         self.flat = _d(rates["brokerage_flat"])
+        self.brk_min = _d(rates.get("brokerage_min", 0))
         self.brk_pct = _d(rates["brokerage_pct"]) / 100
         self.stt_sell = _d(rates["stt_sell_pct"]) / 100
         self.exch = _d(rates["exchange_pct"]) / 100
@@ -42,9 +43,11 @@ class CostModel:
         self.gst = _d(rates["gst_pct"]) / 100
 
     def brokerage(self, order_value) -> Decimal:
-        """Per executed order: the flat fee or the percentage, whichever is lower."""
+        """Per executed order: the flat fee or the percentage, whichever is lower, with a minimum."""
         v = _d(order_value)
-        return min(self.flat, v * self.brk_pct)
+        if v <= 0:
+            return Decimal(0)
+        return max(self.brk_min, min(self.flat, v * self.brk_pct))
 
     def round_trip(self, buy_value, sell_value) -> Charges:
         buy, sell = _d(buy_value), _d(sell_value)

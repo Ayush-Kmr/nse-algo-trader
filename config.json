@@ -8,6 +8,11 @@
   "max_position_pct": 60,
   "min_net_reward_risk": 1.5,
   "max_cost_to_risk_pct": 25,
+  "min_position_value": 5000,
+  "max_entry_drift_pct": 0.3,
+  "max_tick_gap_minutes": 20,
+  "max_data_age_minutes": 15,
+  "bar_grace_seconds": 60,
   "slippage_pct": 0.05,
   "tick_size": 0.05,
   "bar_minutes": 5,
@@ -41,17 +46,22 @@
     "SUNPHARMA", "M&M", "TITAN", "ULTRACEMCO", "NTPC", "POWERGRID",
     "ADANIPORTS", "HCLTECH", "WIPRO", "TATASTEEL", "JSWSTEEL"
   ],
-  "holidays": [],
+  "holidays": [
+    "2026-01-15", "2026-01-26", "2026-03-03", "2026-03-26", "2026-03-31", "2026-04-03",
+    "2026-04-14", "2026-05-01", "2026-05-28", "2026-06-26", "2026-09-14", "2026-10-02",
+    "2026-10-20", "2026-11-10", "2026-11-24", "2026-12-25"
+  ],
   "costs": {
     "broker": "angelone",
     "brokerage_flat": 20,
     "brokerage_pct": 0.1,
+    "brokerage_min": 5,
     "stt_sell_pct": 0.025,
-    "exchange_pct": 0.00297,
+    "exchange_pct": 0.0030699,
     "sebi_per_crore": 10,
     "stamp_buy_pct": 0.003,
     "gst_pct": 18,
     "verified": false,
-    "note": "Angel One intraday equity rates as understood on 2026-10-29. Verify against the live charge sheet before relying on them."
+    "note": "From angelone.in/exchange-transaction-charges on 2026-10-30. Stays unverified until matched to a real contract note."
   }
 }

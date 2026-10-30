@@ -4,6 +4,9 @@ Date: 2026-10-29
 Repo audited: https://github.com/jakeschincariol/day-trader-skill @ `3d0f4ef` (single commit, 2026-10-20)
 Status: **Phase 1 deliverable — awaiting review. No code modified, no orders anywhere.**
 
+> Superseded in part (2026-10-30): the "approval-required, permanently" and laptop-hosting answers
+> below were replaced by the unattended design. See `UNATTENDED_DESIGN.md` and the README.
+
 ---
 
 ## 1. Phase 0 — answers on record

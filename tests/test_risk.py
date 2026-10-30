@@ -42,9 +42,9 @@ class RiskTests(unittest.TestCase):
         self.assertIn("daily loss limit", v.reasons[-1])
 
     def test_daily_limit_shrinks_budget(self):
-        v = self.check(a=acct(realised_today=-300))  # ₹200 room left of ₹500
+        v = self.check(a=acct(realised_today=-270))  # ₹230 room left of ₹500
         self.assertTrue(v.ok, v.reasons)
-        self.assertLessEqual(v.details["loss_at_stop"], 200)
+        self.assertLessEqual(v.details["loss_at_stop"], 230)
 
     def test_max_positions(self):
         self.assertFalse(self.check(a=acct(open_positions=2)).ok)

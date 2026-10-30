@@ -41,4 +41,6 @@ def size_position(entry: float, stop: float, risk_budget: float, costs: CostMode
             return Size(qty, buy_px, round(loss, 2), ch, limited_by)
         qty -= 1
         limited_by = "max loss per trade (after costs)"
+    if by_value < 1 and by_risk >= 1:
+        return Size(0, buy_px, 0.0, 0.0, "no cash or position cap left for one share")
     return Size(0, buy_px, 0.0, 0.0, "stop too far for the risk budget")

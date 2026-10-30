@@ -1,10 +1,11 @@
 name: end-of-day
 
-# 10:15 UTC = 15:45 IST, after the 15:15 square-off. Writes the daily report, appends the
-# journal and commits both plus the state, so nothing depends on the cache long term.
+# cron-job.org triggers this at 15:45 IST, after the 15:15 square-off (scripts/setup_cronjob.py).
+# The cron below is a backup at 16:15 IST. Writes the daily report, appends the journal and commits
+# both plus the state, so nothing depends on the cache long term.
 on:
   schedule:
-    - cron: "15 10 * * 1-5"
+    - cron: "45 10 * * 1-5"
   workflow_dispatch:
 
 concurrency:
@@ -44,6 +45,7 @@ jobs:
           git add -f state/state.json reports journal
           git diff --cached --quiet && exit 0
           git commit -m "eod: $(date -u +%F) paper report"
+          git pull --rebase
           git push
 
       - name: save state

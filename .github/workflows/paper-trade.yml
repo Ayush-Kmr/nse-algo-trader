@@ -1,12 +1,14 @@
 name: paper-trade
 
-# Every 5 minutes, Mon-Fri, 04:00-09:55 UTC = 09:30-15:25 IST.
+# The real clock is cron-job.org, calling workflow_dispatch every 5 minutes, 09:32-15:27 IST
+# (scripts/setup_cronjob.py), because GitHub's schedule skipped 71 of 72 ticks on its first day.
+# The cron below is only a sparse backup, hourly at :17 IST, so it cannot burn the Actions minutes.
 # The opening range (09:15-09:30) is read back from the bars, so no tick is needed before 09:30.
-# GitHub may start scheduled runs a few minutes late; the engine only acts on completed bars
-# and expires signals older than `max_signal_age_bars`.
+# Ticks run 2 minutes past the bar so Yahoo can finish it. The engine only acts on completed bars,
+# expires signals older than `max_signal_age_bars`, and alerts on gaps (`max_tick_gap_minutes`).
 on:
   schedule:
-    - cron: "*/5 4-9 * * 1-5"
+    - cron: "47 4-9 * * 1-5"
   workflow_dispatch:
 
 concurrency:
