@@ -1,4 +1,4 @@
-"""python -m algo tick | eod | backtest | experiments | signals | walkforward | status | commands | telegram-test"""
+"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | status | commands | telegram-test"""
 from __future__ import annotations
 
 import argparse
@@ -9,6 +9,7 @@ import sys
 from . import backtest as bt
 from . import commands
 from . import experiments as ex
+from . import learn
 from . import research
 from .data import YahooSource, load_history, save_history
 from .engine import Engine, new_state
@@ -198,6 +199,12 @@ def cmd_walkforward(a, cfg) -> int:
     return 0
 
 
+def cmd_learn(a, cfg) -> int:
+    hist = get_history(cfg, a.range, a.refresh)
+    _write("learn-latest.md", learn.to_markdown(learn.run(cfg, hist, now_ist().date())))
+    return 0
+
+
 def cmd_commands(a, cfg) -> int:
     print("answered %d command(s)" % commands.process(load_state(cfg), cfg, kill_switch_on()))
     return 0
@@ -229,7 +236,8 @@ def main(argv=None) -> int:
     e.add_argument("--range", default="60d")
     e.add_argument("--refresh", action="store_true")
     for name, text in (("signals", "study every signal, without portfolio limits"),
-                       ("walkforward", "pick variants on past data, score them on unseen data")):
+                       ("walkforward", "pick variants on past data, score them on unseen data"),
+                       ("learn", "train a signal filter on past days, score it on unseen days")):
         r = sub.add_parser(name, help=text)
         r.add_argument("--range", default="60d")
         r.add_argument("--refresh", action="store_true")
@@ -243,7 +251,7 @@ def main(argv=None) -> int:
     cfg = load_cfg(a.config)
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
             "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
-            "walkforward": cmd_walkforward, "commands": cmd_commands}[a.cmd](a, cfg)
+            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn}[a.cmd](a, cfg)
 
 
 if __name__ == "__main__":

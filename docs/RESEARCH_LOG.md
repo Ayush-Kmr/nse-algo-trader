@@ -3,6 +3,22 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-30 — round 3: a learned signal filter, pre-registered before running
+
+`python3 -m algo learn`: ridge regression on features known at the signal bar, predicting gross R,
+across all 5 entries without the regime filter. Fitted only on earlier sessions (30 minimum), refitted
+every 10, scored on unseen ones. It takes a signal when predicted gross R is above 0.28.
+
+**Pass rule, set in advance:** 30+ picked unseen signals, and a 95% lower bound on net R above zero.
+One model, one threshold, one run. The penalty and features are not changed after seeing the result.
+
+**Result: fails. The model found nothing it could use.** Of 810 unseen signals (average −0.204R
+gross, −0.487R net), it predicted +0.28R or better for only 4, and those averaged −0.331R gross and
+−0.464R net. Four signals prove nothing about the model, but a filter that almost never fires has no
+pattern to trade. A test in `tests/` confirms the same code does find a pattern when one exists.
+Limits: 60 sessions, one market period, linear model. A bigger model on this little data would only
+memorise it. Nothing here reaches the engine.
+
 ## 2026-10-30 — round 2: three new entries, pre-registered before running
 
 Tested with `python3 -m algo signals --strategies <name>`, with parameters fixed in `config.json`:

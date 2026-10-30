@@ -53,7 +53,7 @@ def _green(index_bars, ts) -> bool:
     return bool(seen) and seen[-1].close > seen[0].open
 
 
-def signal_rows(cfg: dict, history: dict, exclude_date=None) -> list:
+def signal_rows(cfg: dict, history: dict, exclude_date=None, feature_fn=None) -> list:
     index = cfg["regime"]["index"]
     costs = CostModel(cfg["costs"])
     broker = PaperBroker(costs, slip_pct(cfg), cfg["tick_size"])
@@ -78,6 +78,8 @@ def signal_rows(cfg: dict, history: dict, exclude_date=None) -> list:
                 if tr:
                     rows.append(dict(tr, date=d.isoformat(), gross_r=tr["gross_pnl"] / tr["planned_risk"],
                                      hour=sig.bar_ts.strftime("%H")))
+                    if feature_fn:
+                        rows[-1]["x"] = feature_fn(sig, bars, idx_days.get(d, []))
     return rows
 
 

@@ -163,3 +163,23 @@ class NewStrategyTests(unittest.TestCase):
         s = afternoon_high("X", day(D, rows), self.cfg)
         self.assertIsNotNone(s)
         self.assertGreaterEqual(s.bar_ts.strftime("%H:%M"), "13:00")
+
+
+class LearnTests(unittest.TestCase):
+    def test_ridge_recovers_a_line(self):
+        from algo.learn import predict, ridge
+        X = [[1.0, float(i)] for i in range(20)]
+        w = ridge(X, [2 + 3 * r[1] for r in X], lam=0.0)
+        self.assertAlmostEqual(predict(w, [1.0, 10.0]), 32.0, places=6)
+
+    def row(self, day_i, f, y):
+        return {"date": "2026-%02d-%02d" % (8 + day_i // 28, 1 + day_i % 28), "x": [f], "gross_r": y, "r_multiple": y - 0.3,
+                "exit_reason": "stop", "net_pnl": y, "gross_pnl": y, "charges": 1.0}
+
+    def test_walk_finds_a_real_pattern_and_never_scores_training_days(self):
+        from algo.learn import walk
+        rows = [self.row(d, f, 2.0 * f) for d in range(50) for f in (-1.0, 1.0)]
+        rep = walk(rows, min_train=30, step=10)
+        self.assertEqual(rep["unseen"]["signals"], 40)
+        self.assertEqual(rep["picked"]["signals"], 20)
+        self.assertGreater(rep["picked"]["avg_gross_r"], 1.5)
