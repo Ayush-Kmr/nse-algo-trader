@@ -183,3 +183,15 @@ class LearnTests(unittest.TestCase):
         self.assertEqual(rep["unseen"]["signals"], 40)
         self.assertEqual(rep["picked"]["signals"], 20)
         self.assertGreater(rep["picked"]["avg_gross_r"], 1.5)
+
+
+class DemoTests(unittest.TestCase):
+    def test_every_message_is_labelled_and_uses_no_real_stock(self):
+        from algo import demo
+        with mock.patch.object(demo, "telegram", return_value=True) as tg, mock.patch.object(demo.time, "sleep"):
+            self.assertEqual(demo.run(), len(demo.MESSAGES))
+        sent = [c[0][0] for c in tg.call_args_list]
+        self.assertTrue(all(m.startswith("🧪 DEMO, NOT A REAL TRADE") for m in sent))
+        self.assertTrue(all(len(m) < 4000 for m in sent))
+        joined = " ".join(sent)
+        self.assertFalse(any(s in joined for s in cfg()["universe"]))

@@ -8,6 +8,7 @@ import sys
 
 from . import backtest as bt
 from . import commands
+from . import demo
 from . import experiments as ex
 from . import learn
 from . import research
@@ -205,6 +206,12 @@ def cmd_learn(a, cfg) -> int:
     return 0
 
 
+def cmd_telegram_demo(a, cfg) -> int:
+    sent = demo.run()
+    print("demo: sent %d of %d" % (sent, len(demo.MESSAGES)))
+    return 0 if sent == len(demo.MESSAGES) else 1
+
+
 def cmd_commands(a, cfg) -> int:
     print("answered %d command(s)" % commands.process(load_state(cfg), cfg, kill_switch_on()))
     return 0
@@ -244,6 +251,7 @@ def main(argv=None) -> int:
         if name == "signals":
             r.add_argument("--strategies", help="comma-separated, instead of config.json's")
             r.add_argument("--no-regime", action="store_true", help="drop the Nifty green-day filter")
+    sub.add_parser("telegram-demo", help="post a labelled walk-through of the channel's messages")
     sub.add_parser("commands", help="answer waiting Telegram commands now")
     sub.add_parser("status")
     sub.add_parser("telegram-test", help="send one test message and print why it failed, if it did")
@@ -251,7 +259,8 @@ def main(argv=None) -> int:
     cfg = load_cfg(a.config)
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
             "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
-            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn}[a.cmd](a, cfg)
+            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn,
+            "telegram-demo": cmd_telegram_demo}[a.cmd](a, cfg)
 
 
 if __name__ == "__main__":
