@@ -7,23 +7,23 @@ Strategies: orb, vwap_reclaim. Capital 50000, risk 0.5%/trade, daily limit 1.0%.
 
 | slice | trades | win % | net ₹ | gross ₹ | charges ₹ | ₹/trade | avg R | PF | max DD ₹ |
 |---|---|---|---|---|---|---|---|---|---|
-| all | 66 | 33.3 | -4504.31 | -1121.95 | 3382.36 | -68.25 | -0.315 | 0.38 | 5101.39 |
-| in-sample | 38 | 26.3 | -4008.03 | -2021.45 | 1986.58 | -105.47 | -0.480 | 0.24 | 4107.67 |
-| out-of-sample | 28 | 42.9 | -496.28 | 899.50 | 1395.78 | -17.72 | -0.091 | 0.75 | 1003.54 |
-| strategy: orb | 61 | 34.4 | -4059.24 | -921.35 | 3137.89 | -66.54 | -0.301 | 0.4 | 4656.32 |
-| strategy: vwap_reclaim | 5 | 20.0 | -445.07 | -200.60 | 244.47 | -89.01 | -0.488 | 0.16 | 449.34 |
+| all | 67 | 32.8 | -4523.25 | -1089.45 | 3433.80 | -67.51 | -0.300 | 0.38 | 5129.40 |
+| in-sample | 39 | 25.6 | -3963.54 | -1929.35 | 2034.19 | -101.63 | -0.451 | 0.25 | 4072.25 |
+| out-of-sample | 28 | 42.9 | -559.71 | 839.90 | 1399.61 | -19.99 | -0.090 | 0.72 | 1067.46 |
+| strategy: orb | 63 | 33.3 | -4227.83 | -981.25 | 3246.58 | -67.11 | -0.297 | 0.39 | 4833.98 |
+| strategy: vwap_reclaim | 4 | 25.0 | -295.42 | -108.20 | 187.22 | -73.85 | -0.338 | 0.23 | 299.69 |
 
-Exits: stop 27, square-off 37, target 2
+Exits: stop 26, square-off 39, target 2
 
 Top reasons the risk engine blocked a signal:
 
-- max open positions (N) reached: 213
+- max open positions (N) reached: 225
 - net reward:risk N below N: 210
-- size is zero: stop too far for the risk budget: 163
-- charges are N% of the risk budget (max N%): 98
-- position N below the minimum N: 68
+- size is zero: stop too far for the risk budget: 169
+- charges are N% of the risk budget (max N%): 95
+- position N below the minimum N: 76
 - net reward:risk -N below N: 20
-- size is zero: no cash or position cap left for one share: 17
-- daily loss limit: no room left (lost N, open risk N, limit N): 6
+- size is zero: no cash or position cap left for one share: 14
+- daily loss limit: no room left (lost N, open risk N, limit N): 12
 
 60 days of 5-minute data is a short sample. Treat any result as a hypothesis, not proof.
