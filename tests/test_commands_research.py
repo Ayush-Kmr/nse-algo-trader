@@ -137,3 +137,29 @@ class ResearchTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NewStrategyTests(unittest.TestCase):
+    def setUp(self):
+        self.cfg = cfg()
+
+    def test_pullback_needs_a_strong_open(self):
+        from algo.strategies.pullback import pullback
+        rows = [(100, 101.5, 100, 101.2, 4000)] * 9 + [(100.6, 101.1, 100.2, 101, 2000)]
+        self.assertIsNotNone(pullback("X", day(D, rows), self.cfg))
+        weak = [(100, 100.2, 99.9, 100.1, 4000)] * 9 + [(100.1, 100.3, 99.8, 100.2, 2000)]
+        self.assertIsNone(pullback("X", day(D, weak), self.cfg))
+
+    def test_revert_targets_vwap(self):
+        from algo.strategies.vwap_revert import vwap_revert
+        rows = [(102, 102.5, 101.5, 102, 9000)] * 9 + [(100, 100.2, 99.5, 99.8, 1000), (99.8, 100.4, 99.7, 100.3, 1000)]
+        s = vwap_revert("X", day(D, rows), self.cfg)
+        self.assertIsNotNone(s)
+        self.assertGreater(s.target, s.entry)
+
+    def test_afternoon_high_waits_for_the_afternoon(self):
+        from algo.strategies.afternoon_high import afternoon_high
+        rows = [(100, 101, 100, 100.9, 1000)] * 47 + [(100.9, 103, 100.9, 102.5, 1000)]
+        s = afternoon_high("X", day(D, rows), self.cfg)
+        self.assertIsNotNone(s)
+        self.assertGreaterEqual(s.bar_ts.strftime("%H:%M"), "13:00")

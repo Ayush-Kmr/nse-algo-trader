@@ -3,6 +3,29 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-30 — round 2: three new entries, pre-registered before running
+
+Tested with `python3 -m algo signals --strategies <name>`, with parameters fixed in `config.json`:
+`pullback` (strong open, first dip to VWAP that holds), `vwap_revert` (1%+ below VWAP, then a bar
+closes above the prior high, target VWAP, run with `--no-regime`), `afternoon_high` (new day high
+after 13:00 on a stock up 1%+, above VWAP).
+
+**Pass rule, set in advance:** with 3 tries, the out-of-sample average **net** R must be above zero,
+and the 95% lower bound on all-sample gross R must be above the cost of about 0.28R. Passing only
+earns a backtest and forward paper trading. No parameter is changed after seeing a result.
+
+**Result: all three fail. `config.json` keeps `orb` and `vwap_reclaim`, and none goes live on paper.**
+
+| entry | signals | gross R (95% interval) | out-of-sample net R |
+|---|---|---|---|
+| `pullback` | 139 | −0.231 (−0.350 to −0.112) | −0.572 |
+| `afternoon_high` | 94 | −0.114 (−0.212 to −0.016) | −0.310 |
+| `vwap_revert` | 72 | −0.084 (−0.281 to +0.112) | −0.333 |
+
+None came close to the +0.28R gross needed. `vwap_revert` is the least bad but has few signals and a
+wide interval, so it shows nothing either way. Long-only intraday entries on these 25 names have not
+worked in this 60-session period, and more variants on the same data would only be curve-fitting.
+
 ## 2026-10-30 — signal study and walk-forward: the entries themselves lose
 
 Added a 0.01% half spread, then measured every signal without portfolio limits (472 signals against

@@ -9,6 +9,7 @@ import time
 import urllib.parse
 import urllib.request
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 
 from .models import Bar
@@ -95,14 +96,19 @@ class YahooSource:
 
     def today(self, symbols, now: datetime, grace_seconds: int = 0):
         """-> ({symbol: completed bars today}, {symbol: error})"""
-        out, errors = {}, {}
-        for s in symbols:
+        def fetch(s):
             try:
-                bars = fetch_bars(s, "1d", "5m")
-                out[s] = [b for b in completed(bars, now, grace_seconds) if b.ts.date() == now.date()]
+                return s, fetch_bars(s, "1d", "5m"), None
             except Exception as e:  # noqa: BLE001
-                errors[s] = str(e)
-            time.sleep(self.pause)
+                return s, None, str(e)
+
+        out, errors = {}, {}
+        with ThreadPoolExecutor(max_workers=6) as pool:  # a few at a time: Yahoo rate-limits cloud IPs
+            for s, bars, err in pool.map(fetch, symbols):
+                if err is not None:
+                    errors[s] = err
+                else:
+                    out[s] = [b for b in completed(bars, now, grace_seconds) if b.ts.date() == now.date()]
         return out, errors
 
     def history(self, symbols, range_: str = "60d"):

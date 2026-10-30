@@ -37,6 +37,9 @@
     "lookback_bars": 3,
     "min_stop_pct": 0.2
   },
+  "pullback": {"start_after": "10:00", "min_open_move_pct": 0.5, "target_r": 2.0, "min_stop_pct": 0.2},
+  "vwap_revert": {"start_after": "10:00", "min_stretch_pct": 1.0, "min_reward_r": 1.0, "min_stop_pct": 0.2},
+  "afternoon_high": {"start_after": "13:00", "min_day_move_pct": 1.0, "target_r": 5.0, "min_stop_pct": 0.2},
   "regime": {
     "index": "^NSEI",
     "require_green_day": true

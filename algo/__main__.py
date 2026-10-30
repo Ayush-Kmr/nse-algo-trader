@@ -181,7 +181,13 @@ def _write(name: str, md: str) -> None:
 
 def cmd_signals(a, cfg) -> int:
     hist = get_history(cfg, a.range, a.refresh)
-    _write("signals-latest.md", research.study_markdown(research.signal_study(cfg, hist, now_ist().date())))
+    name = "signals-latest.md"
+    if a.strategies:
+        cfg = ex.deep_merge(cfg, {"strategies": a.strategies.split(",")})
+        name = "signals-%s.md" % a.strategies.replace(",", "-")
+    if a.no_regime:
+        cfg = ex.deep_merge(cfg, {"regime": {"require_green_day": False}})
+    _write(name, research.study_markdown(research.signal_study(cfg, hist, now_ist().date())))
     return 0
 
 
@@ -227,6 +233,9 @@ def main(argv=None) -> int:
         r = sub.add_parser(name, help=text)
         r.add_argument("--range", default="60d")
         r.add_argument("--refresh", action="store_true")
+        if name == "signals":
+            r.add_argument("--strategies", help="comma-separated, instead of config.json's")
+            r.add_argument("--no-regime", action="store_true", help="drop the Nifty green-day filter")
     sub.add_parser("commands", help="answer waiting Telegram commands now")
     sub.add_parser("status")
     sub.add_parser("telegram-test", help="send one test message and print why it failed, if it did")
