@@ -3,6 +3,22 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-30 — almost 3 years of hourly data, about 200 stocks
+
+Pass rule set first: 100+ model picks on unseen sessions, and a 95% lower bound on net R above zero.
+First-hour breakouts, hold to the close, Nov 2023 to Oct 2026, 703 sessions, 42,187 signals.
+`python3 -m algo weekly` repeats this. Report: `reports/longtest-latest.md`.
+
+- All signals: −0.052R gross (interval −0.056R to −0.048R), −0.188R net.
+- Volume 2x normal: −0.041R gross, −0.153R net. Volume 4x normal: −0.037R gross, −0.134R net. The
+  stocks-in-play filter does help a little, but stays negative before charges.
+- Every 6-month period was negative before charges.
+- 28,113 unseen signals: −0.055R gross, −0.194R net. The model picked none. **Fails.**
+
+Across several market conditions, these long-only breakouts sit near zero before charges, and charges
+decide the result. That points at trade cost and frequency as much as at entries. Hourly bars are
+coarser than the live 5-minute rules, so this is a general check, not a test of the live strategies.
+
 ## 2026-10-30 — wider market: Nifty 200 instead of 25 names
 
 Same model, features, threshold and pass rule, on all 200 Nifty 200 stocks over 59 sessions, using

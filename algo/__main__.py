@@ -1,4 +1,4 @@
-"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | status | commands | telegram-test"""
+"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | weekly | status | commands | telegram-test"""
 from __future__ import annotations
 
 import argparse
@@ -12,8 +12,10 @@ from . import commands
 from . import demo
 from . import experiments as ex
 from . import learn
+from . import longtest
 from . import research
 from . import stability
+from . import weekly
 from .data import YahooSource, load_history, save_history
 from .engine import Engine, new_state
 from .chart import chart_notifier
@@ -244,6 +246,20 @@ def cmd_stability(a, cfg) -> int:
     return 0 if stability.passed(rep) else 1
 
 
+def cmd_weekly(a, cfg) -> int:
+    hist = get_history(cfg, a.range, a.refresh)
+    with open(os.path.join(ROOT, "universe_200.txt")) as fh:
+        universe = fh.read().split()
+    short, long_rep, paper = weekly.run(cfg, hist, universe, os.path.join(ROOT, "journal", "trades.csv"), now_ist().date())
+    _write("learn-latest.md", learn.to_markdown(short))
+    _write("longtest-latest.md", longtest.to_markdown(long_rep))
+    msg = weekly.message(short, long_rep, paper)
+    print(msg)
+    if not a.quiet:
+        telegram(msg)
+    return 0
+
+
 def cmd_commands(a, cfg) -> int:
     print("answered %d command(s)" % commands.process(load_state(cfg), cfg, kill_switch_on()))
     return 0
@@ -277,7 +293,8 @@ def main(argv=None) -> int:
     for name, text in (("signals", "study every signal, without portfolio limits"),
                        ("walkforward", "pick variants on past data, score them on unseen data"),
                        ("learn", "train a signal filter on past days, score it on unseen days"),
-                       ("stability", "stress the live path with injected faults")):
+                       ("stability", "stress the live path with injected faults"),
+                       ("weekly", "refit on the newest data and post the learning report")):
         r = sub.add_parser(name, help=text)
         r.add_argument("--range", default="60d")
         r.add_argument("--refresh", action="store_true")
@@ -302,7 +319,7 @@ def main(argv=None) -> int:
 def _dispatch(a, cfg) -> int:
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
             "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
-            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability,
+            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability, "weekly": cmd_weekly,
             "telegram-demo": cmd_telegram_demo, "telegram-sim": cmd_telegram_sim}[a.cmd](a, cfg)
 
 

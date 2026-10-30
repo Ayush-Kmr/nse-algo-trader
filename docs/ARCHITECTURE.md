@@ -116,6 +116,13 @@ the command.
 - **Tick size** is 0.05 for all stocks. This matters only for live orders; check it first.
 - **Charges** are from Angel One's page and unconfirmed against a contract note.
 
+## Weekly learning
+
+Every Saturday `python3 -m algo weekly` refits the filter on the newest 5-minute data and the hourly
+history, reads the system's own paper journal, and posts a report to the channel. It only learns and
+reports: it never changes `config.json` or what the engine trades. Promoting a change takes the gate
+in `README.md` and a person's decision, so that noise cannot reach the trades by itself.
+
 ## Stability
 
 `python3 -m algo stability` replays the history through the tick path, reloading state from JSON on

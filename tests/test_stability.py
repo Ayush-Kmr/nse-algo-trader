@@ -65,3 +65,37 @@ class ReplayTests(unittest.TestCase):
     def test_chaos_breaks_no_rule(self):
         rep = stability.run(one_symbol_cfg(), ResearchTests().hist(8), seeds=(1, 2))
         self.assertTrue(stability.passed(rep))
+
+
+class WeeklyTests(unittest.TestCase):
+    def test_message_says_nothing_passed(self):
+        from algo import weekly
+        short = {"signals": 10, "unseen": {"avg_gross_r": -0.2}, "picked": {"signals": 0}, "verdict": "INCONCLUSIVE: 0"}
+        long_rep = {"sessions": 5, "all": {"signals": 9, "avg_gross_r": -0.05}, "picked": {"signals": 0}, "verdict": "INCONCLUSIVE: 0"}
+        msg = weekly.message(short, long_rep, {"trades": 0})
+        self.assertIn("nothing passed", msg)
+        self.assertIn("none yet", msg)
+
+    def test_paper_results_read_the_journal(self):
+        from algo import weekly
+        with tempfile.TemporaryDirectory() as tmp:
+            p = os.path.join(tmp, "t.csv")
+            self.assertEqual(weekly.paper_results(p)["trades"], 0)
+            with open(p, "w") as fh:
+                fh.write("net_pnl,gross_pnl,charges,r_multiple,exit_reason\n-10,5,15,-0.5,stop\n20,35,15,1.0,target\n")
+            self.assertEqual(weekly.paper_results(p)["trades"], 2)
+
+    def test_long_test_finds_signals_and_ignores_the_first_bar_volume(self):
+        from algo import longtest
+        from algo.models import Bar
+        from algo.timeutil import IST
+        from datetime import datetime, timedelta
+        bars = []
+        for k in range(30):
+            t = datetime(2026, 1, 1, 9, 15, tzinfo=IST) + timedelta(days=k)
+            for i, (o, h, l, c) in enumerate([(100, 101, 99.5, 100.5), (100.5, 102, 100, 101.5), (101.5, 103, 101, 102),
+                                              (102, 102.5, 101, 101.5), (101.5, 102, 101, 101.2), (101.2, 102, 101, 101.5)]):
+                bars.append(Bar(t + timedelta(hours=i), o, h, l, c, 0.0 if i == 0 else 1000.0, 60))
+        rows = longtest.rows(cfg(), {"X": bars})
+        self.assertEqual(len(rows), 10)
+        self.assertEqual(rows[0]["rel_volume"], 1.0)

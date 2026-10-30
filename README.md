@@ -108,6 +108,7 @@ python3 -m algo signals                            # every signal, without portf
 python3 -m algo walkforward                        # pick on the past, score on unseen days
 python3 -m algo learn                              # train a filter on past days, score on unseen ones
 python3 -m algo stability                          # stress the live path with injected faults
+python3 -m algo weekly                             # refit, read paper trades, post the report
 python3 -m algo commands                           # answer waiting Telegram commands now
 python3 -m algo tick --now "2026-10-29 10:15"      # one step at a pinned time
 python3 -m algo status
