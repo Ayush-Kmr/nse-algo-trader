@@ -1,4 +1,4 @@
-"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | weekly | survey | status | commands | telegram-test"""
+"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | weekly | survey | delivery | extra | status | commands | telegram-test"""
 from __future__ import annotations
 
 import argparse
@@ -9,8 +9,10 @@ import time
 
 from . import backtest as bt
 from . import commands
+from . import delivery
 from . import demo
 from . import experiments as ex
+from . import extra
 from . import learn
 from . import longtest
 from . import research
@@ -270,6 +272,30 @@ def cmd_survey(a, cfg) -> int:
     return 0
 
 
+def cmd_delivery(a, cfg) -> int:
+    with open(os.path.join(ROOT, "universe_200.txt")) as fh:
+        universe = fh.read().split()
+    closes = delivery.fetch(universe + [delivery.ETF, delivery.INDEX])
+    print("fetched %d symbols" % len(closes))
+    _write("delivery-latest.md", delivery.to_markdown(delivery.run(closes)))
+    return 0
+
+
+def cmd_extra(a, cfg) -> int:
+    with open(os.path.join(ROOT, "universe_200.txt")) as fh:
+        universe = fh.read().split()
+    index = cfg["regime"]["index"]
+    today = now_ist().date()
+    five = YahooSource(pause=0.05).history(universe + [index], "60d")
+    hourly = longtest.fetch(universe + [index])
+    industry = extra.load_industries(os.path.join(ROOT, "universe_200.csv"))
+    _write("extra-latest.md", extra.to_markdown({
+        "Finer timing, 5-minute bars": extra.finer(cfg, five, today),
+        "News proxy: big gaps on heavy volume": extra.news_proxy(cfg, hourly, today),
+        "Pairs trading": extra.pairs(cfg, hourly, industry, today)}))
+    return 0
+
+
 def cmd_commands(a, cfg) -> int:
     print("answered %d command(s)" % commands.process(load_state(cfg), cfg, kill_switch_on()))
     return 0
@@ -313,6 +339,8 @@ def main(argv=None) -> int:
             r.add_argument("--no-regime", action="store_true", help="drop the Nifty green-day filter")
     sub.add_parser("telegram-demo", help="post a labelled walk-through of the channel's messages")
     sub.add_parser("telegram-sim", help="replay made-up days through the real engine, alerts on")
+    sub.add_parser("delivery", help="multi-month delivery strategies with real charges")
+    sub.add_parser("extra", help="finer timing, news proxy and pairs tests")
     sub.add_parser("survey", help="contest of the main intraday strategy families")
     sub.add_parser("commands", help="answer waiting Telegram commands now")
     sub.add_parser("status")
@@ -330,7 +358,7 @@ def main(argv=None) -> int:
 def _dispatch(a, cfg) -> int:
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
             "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
-            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability, "weekly": cmd_weekly, "survey": cmd_survey,
+            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability, "weekly": cmd_weekly, "survey": cmd_survey, "delivery": cmd_delivery, "extra": cmd_extra,
             "telegram-demo": cmd_telegram_demo, "telegram-sim": cmd_telegram_sim}[a.cmd](a, cfg)
 
 

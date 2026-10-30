@@ -46,7 +46,7 @@ def fetch_bars(sym: str, range_: str = "5d", interval: str = "5m", retries: int 
         return []
     r = res[0]
     q = r["indicators"]["quote"][0]
-    minutes = int(interval.rstrip("m"))
+    minutes = 1440 if interval == "1d" else int(interval.rstrip("m"))
     bars = []
     for i, ts in enumerate(r.get("timestamp") or []):
         o, h, l, c, v = (q[k][i] for k in ("open", "high", "low", "close", "volume"))
