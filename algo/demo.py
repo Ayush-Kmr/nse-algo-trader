@@ -8,6 +8,7 @@ from __future__ import annotations
 import time
 from datetime import date, datetime, timedelta
 
+from .chart import chart_notifier
 from .engine import Engine, new_state
 from .models import Bar
 from .notify import format_event, telegram
@@ -102,17 +103,18 @@ def simulate(cfg: dict, d: date) -> list:
     """Replay made-up days through the real engine, ticking as fast as Telegram allows. State stays in
     memory, so the paper account is never touched."""
     c = dict(cfg, universe=["EXAMPLE"], strategies=["orb"])
-    alert = lambda ev: telegram("🧪 TEST, NOT A REAL TRADE\n" + format_event(ev))  # noqa: E731
     events = []
     for k, (name, path) in enumerate(SCENARIOS, 1):
         telegram("🧪 TEST %d of %d: %s, using the real engine and risk checks" % (k, len(SCENARIOS), name))
         state = new_state(c)
-        eng = Engine(c, state, notify=alert)
+        view = {}
+        eng = Engine(c, state, notify=chart_notifier(view, "TEST", "🧪 TEST, NOT A REAL TRADE\n"))
         bars = _bars(d, path)
         index = [Bar(b.ts, 25000.0, 25020.0, 24990.0, 25010.0, 0.0) for b in bars]
         for i in range(2, len(bars)):
             now = bars[i].end + timedelta(minutes=2)
-            events += eng.step(now, {"EXAMPLE": bars[:i + 1]}, index[:i + 1], live=True)
+            view["EXAMPLE"] = bars[:i + 1]
+            events += eng.step(now, view, index[:i + 1], live=True)
             if state["today"]["trades"]:
                 break
         t = state["today"]

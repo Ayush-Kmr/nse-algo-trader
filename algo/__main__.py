@@ -15,7 +15,8 @@ from . import learn
 from . import research
 from .data import YahooSource, load_history, save_history
 from .engine import Engine, new_state
-from .notify import event_notifier, send, telegram
+from .chart import chart_notifier
+from .notify import send, telegram
 from .report import append_journal, daily_markdown, expected_ticks
 from .timeutil import hhmm, is_trading_day, now_ist, parse_now
 
@@ -78,7 +79,7 @@ def cmd_tick(a, cfg) -> int:
             telegram("🚨 [PAPER] %s IST: no market data for any symbol this tick." % now.strftime("%H:%M"))
         return 1  # a failed run makes GitHub email you
 
-    eng = Engine(cfg, state, notify=None if a.quiet else event_notifier)
+    eng = Engine(cfg, state, notify=None if a.quiet else chart_notifier(bars))
     events = eng.step(now, bars, index_bars, kill_switch=kill_switch_on(), live=True)
     save_state(state)
     print("%s IST tick: %d symbols, %d open position(s), equity %.2f" % (

@@ -9,6 +9,7 @@ import json
 import os
 import urllib.error
 import urllib.request
+import uuid
 from typing import Tuple
 
 ICONS = {"ENTRY": "🟢", "EXIT": "🔵", "CRITICAL": "🚨", "WARN": "⚠️", "GAP": "⚠️", "KILL": "🛑", "START": "▶️"}
@@ -33,6 +34,28 @@ def send(text: str) -> Tuple[bool, str]:
         return False, "HTTP %s %s" % (e.code, why)
     except Exception as e:  # noqa: BLE001 - alerts must never break trading
         return False, type(e).__name__
+
+
+def send_photo(png: bytes, caption: str) -> bool:
+    """Post a PNG with a caption. False on any failure, so the caller can fall back to text."""
+    token, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
+    if not token or not chat:
+        return False
+    boundary = "----nsealgo%s" % uuid.uuid4().hex
+    parts = []
+    for name, value in (("chat_id", chat), ("caption", caption[:1024])):
+        parts.append(('--%s\r\nContent-Disposition: form-data; name="%s"\r\n\r\n%s\r\n' % (boundary, name, value)).encode())
+    parts.append(('--%s\r\nContent-Disposition: form-data; name="photo"; filename="chart.png"\r\n'
+                  "Content-Type: image/png\r\n\r\n" % boundary).encode() + png + b"\r\n")
+    parts.append(("--%s--\r\n" % boundary).encode())
+    req = urllib.request.Request("https://api.telegram.org/bot%s/sendPhoto" % token, data=b"".join(parts),
+                                 headers={"Content-Type": "multipart/form-data; boundary=%s" % boundary})
+    try:
+        urllib.request.urlopen(req, timeout=15).close()
+        return True
+    except Exception as e:  # noqa: BLE001 - alerts must never break trading
+        print("telegram photo failed: %s" % type(e).__name__)
+        return False
 
 
 def telegram(text: str) -> bool:

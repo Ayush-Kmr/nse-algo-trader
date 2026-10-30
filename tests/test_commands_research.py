@@ -200,9 +200,58 @@ class DemoTests(unittest.TestCase):
 class SimTests(unittest.TestCase):
     def test_each_day_ends_the_right_way_and_is_labelled(self):
         from algo import demo
-        with mock.patch.object(demo, "telegram", return_value=True) as tg:
+        import algo.chart as chart
+        with mock.patch.object(demo, "telegram", return_value=True) as tg, \
+                mock.patch.object(chart, "send_photo", return_value=True) as ph:
             ev = demo.simulate(cfg(), D)
+        self.assertEqual(ph.call_count, 6)
+        self.assertTrue(all(c[0][0].startswith(b"\x89PNG") and "TEST" in c[0][1] for c in ph.call_args_list))
         exits = [e["msg"].split()[0] for e in ev if e["kind"] == "EXIT"]
         self.assertEqual(exits, ["stop", "target", "square-off"])
         self.assertEqual(len([e for e in ev if e["kind"] == "ENTRY"]), 3)
         self.assertTrue(all("TEST" in c[0][0] for c in tg.call_args_list))
+
+
+class ChartTests(unittest.TestCase):
+    def ev(self):
+        from algo import demo
+        return demo._bars(D, demo._flat(1159, 5))
+
+    def test_png_is_valid(self):
+        import struct
+        import zlib
+        from algo import chart
+        png = chart.render(self.ev(), "EXAMPLE BUY 22", "RISK RS 245.06", [("STOP", 1150.4, chart.DOWN)], [])
+        self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertEqual(struct.unpack(">II", png[16:24]), (chart.W, chart.H))
+        i = png.index(b"IDAT")
+        size = struct.unpack(">I", png[i - 4:i])[0]
+        self.assertEqual(len(zlib.decompress(png[i + 4:i + 4 + size])), (chart.W * 3 + 1) * chart.H)
+
+    def test_a_failed_photo_still_sends_the_text(self):
+        from algo import chart
+        ev = {"time": "10:02", "kind": "ENTRY", "symbol": "X", "msg": "buy", "data": {}}
+        with mock.patch.object(chart, "telegram") as tg:
+            chart.chart_notifier({"X": self.ev()})(ev)  # missing data: drawing raises
+        tg.assert_called_once()
+
+    def test_non_trade_events_stay_text(self):
+        from algo import chart
+        with mock.patch.object(chart, "telegram") as tg, mock.patch.object(chart, "send_photo") as ph:
+            chart.chart_notifier({})({"time": "09:32", "kind": "START", "symbol": "*", "msg": "engine live"})
+        ph.assert_not_called()
+        tg.assert_called_once()
+
+
+class CaptionTests(unittest.TestCase):
+    def test_entry_and_exit_read_plainly(self):
+        from algo import chart, demo
+        got = []
+        with mock.patch.object(demo, "telegram", return_value=True), \
+                mock.patch.object(chart, "send_photo", side_effect=lambda p, c: got.append(c) or True):
+            demo.simulate(cfg(), D)
+        self.assertIn("Why: price closed above the opening range", got[0])
+        self.assertIn("not a recommendation", got[0])
+        self.assertIn("Stop hit", got[1])
+        self.assertIn("Target hit", got[3])
+        self.assertIn("15:15 square-off", got[5])

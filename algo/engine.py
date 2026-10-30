@@ -117,7 +117,8 @@ class Engine:
         self.state["equity"] = round(self.state["equity"] + tr.net_pnl, 2)
         self.state["positions"].pop(pos.symbol, None)
         self._event(now, "EXIT", pos.symbol, "%s %d @ %.2f, net %+.2f (%+.2fR, charges %.2f)" % (
-            reason, pos.qty, price, tr.net_pnl, tr.r_multiple, tr.charges), trade=tr.to_dict())
+            reason, pos.qty, price, tr.net_pnl, tr.r_multiple, tr.charges), trade=tr.to_dict(),
+            stop=pos.initial_stop, target=pos.target)
 
     def _manage(self, now, pos: Position, bars: list) -> None:
         last = datetime.fromisoformat(pos.last_bar_ts)
@@ -229,7 +230,7 @@ class Engine:
             today["symbols"].append(sym)
             self._event(now, "ENTRY", sym, "%s: buy %d @ %.2f, stop %.2f, target %.2f, risk %.2f, RS %+.2f%% (%s)" % (
                 name, v.qty, pos.entry_price, pos.stop, pos.target, pos.planned_risk, rs, sig.reason),
-                signal=_sig_dict(sig), **v.details)
+                signal=_sig_dict(sig), fill=pos.entry_price, entry_ts=pos.entry_ts, **v.details)
             self._manage(now, pos, bars)  # bars after the signal bar, if this tick ran late
         return self._new_events
 
