@@ -3,6 +3,20 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-30 — wider market: Nifty 200 instead of 25 names
+
+Same model, features, threshold and pass rule, on all 200 Nifty 200 stocks over 59 sessions, using
+all 5 entries without the regime filter. One-off run, not part of the scheduled reports.
+
+- 12,584 signals: −0.185R gross (95% interval −0.199R to −0.171R), −0.447R net.
+- 7,031 unseen signals: −0.195R gross, −0.456R net. The model picked 1 of them. **Fails.**
+- Rough stocks-in-play check: ORB signals on a bar with 3x+ the day's median volume. 1,241 signals,
+  −0.191R gross. Last 21 sessions: 342 signals, −0.192R gross. This uses volume within the day, not
+  against each stock's history, so it is not the published method.
+
+With 25 times more evidence the interval is tight, and it sits well below zero. More data did not
+reveal a pattern. These are 5-minute bars from one 59-session period.
+
 ## 2026-10-30 — full rerun on freshly downloaded data, plus a stability test
 
 Same result on fresh prices (59 complete sessions): no variant passes. Baseline 66 trades, net
