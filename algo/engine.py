@@ -9,9 +9,10 @@ from dataclasses import replace
 from datetime import datetime
 from typing import Callable, Optional
 
+from .broker.base import Broker
 from .broker.paper import PaperBroker
 from .costs import CostModel
-from .models import Position, round_tick
+from .models import Position, round_tick, slip_pct
 from .risk import Account, check_entry
 from .strategies import REGISTRY
 from .timeutil import hhmm
@@ -32,7 +33,7 @@ class Engine:
         self.cfg = cfg
         self.state = state
         self.costs = CostModel(cfg["costs"])
-        self.broker = PaperBroker(self.costs, cfg["slippage_pct"], cfg["tick_size"])
+        self.broker: Broker = PaperBroker(self.costs, slip_pct(cfg), cfg["tick_size"])
         self.notify = notify or (lambda ev: None)
         self.strategies = [(n, REGISTRY[n]) for n in cfg["strategies"]]
 

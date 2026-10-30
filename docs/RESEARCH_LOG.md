@@ -3,6 +3,30 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-30 — signal study and walk-forward: the entries themselves lose
+
+Added a 0.01% half spread, then measured every signal without portfolio limits (472 signals against
+66 backtest trades, same 60 sessions). Reports: `reports/signals-latest.md`, `reports/walkforward-latest.md`.
+
+**The orb and vwap_reclaim entries do not have an edge in this period, even before charges.**
+
+- Gross: −0.204R a signal, 95% interval −0.271R to −0.136R. Charges add about 0.28R on top. Both
+  splits are negative: in-sample −0.250R, out-of-sample −0.128R. This settles what 71 trades could
+  not: the gross result is below zero, not merely unproven.
+- By strategy: orb −0.183R, vwap_reclaim −0.229R. Both intervals sit below zero.
+- Targets are reachable: 48 of 472 signals hit them. There are just too many stops (273).
+- Walk-forward: 45 unseen trades, net −₹3,351.71, −0.322R. Fails the gate. Picking the best past
+  variant did not carry forward.
+- `rs_filter`, the one positive out-of-sample result in the rerun below, went to −₹2.83 a trade once
+  the spread was added. It was noise. Do not pursue it on that evidence.
+- 09:xx entries are the least bad (−0.048R, interval −0.225R to +0.129R). This was not
+  pre-registered and is still negative after charges, so it is a lead at most.
+
+**What this means:** stop tuning these two strategies. Changing exits or filters cannot repair a
+negative gross entry. A new idea should beat about +0.28R gross in `python3 -m algo signals` before
+any portfolio test. One 60-session period cannot prove these never work, and longer data is still
+the most valuable next step.
+
 ## 2026-10-30 — round 1 rerun after the bug fixes
 
 Corrected charges (₹5 minimum brokerage, exchange 0.0030699%), the ₹5,000 minimum position, the
@@ -42,10 +66,10 @@ nothing earned a promotion.
    the trades that survive do make money: they just do not travel 3R. *Corrected 2026-10-30: this
    said trades rarely reach +1R and exit changes cannot help. `trail_1r` shares the +1R trigger and
    changed in-sample results, so trades do reach +1R. Time or volatility exits are still untested.*
-2. **The gross result is not distinguishable from zero.** Gross was about −₹24 a trade, or −0.13R
+2. **The gross result was not distinguishable from zero on these trades.** Gross was about −₹24 a trade, or −0.13R
    with a standard error of 0.09R. Charges (about ₹49 a trade, roughly 0.23R) make the net result
    clearly negative: −0.36R, 95% CI −0.53R to −0.20R. *Corrected 2026-10-30: this said there was
-   no gross edge, which 71 trades cannot show either way.*
+   no gross edge, which 71 trades cannot show either way. The signal study above now shows it.*
 3. **Costs set a high bar.** At ₹50k and 0.5% risk, a trade must make about 0.2R just to pay charges.
    An idea has to show clearly positive *gross* results before it is worth testing net.
 

@@ -77,6 +77,11 @@ class Trade:
         return asdict(self)
 
 
+def slip_pct(cfg: dict) -> float:
+    """Assumed cost of crossing per fill, in percent: slippage plus half the bid-ask spread."""
+    return cfg["slippage_pct"] + cfg.get("half_spread_pct", 0)
+
+
 def round_tick(price: float, tick: float, mode: str = "nearest") -> float:
     """Snap a price to the exchange tick. The epsilon stops 100.05/0.05 = 2000.9999 from flooring wrong."""
     n = price / tick

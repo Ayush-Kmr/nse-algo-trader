@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import getpass
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -59,8 +60,8 @@ def job_body(title: str, workflow: str, hours: list, minutes: list, token: str) 
 
 
 def main() -> int:
-    key = getpass.getpass("cron-job.org API key: ").strip()
-    token = getpass.getpass("GitHub fine-grained token: ").strip()
+    key = (os.environ.get("CRONJOB_API_KEY") or getpass.getpass("cron-job.org API key: ")).strip()
+    token = (os.environ.get("GH_DISPATCH_TOKEN") or getpass.getpass("GitHub fine-grained token: ")).strip()
     cron = {"Authorization": "Bearer " + key}
     try:
         call("GET", "https://api.github.com/repos/%s/actions/workflows/paper-trade.yml" % REPO,

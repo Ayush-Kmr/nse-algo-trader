@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from .costs import CostModel
-from .models import Signal
+from .models import Signal, slip_pct
 from .sizing import size_position
 from .timeutil import hhmm
 
@@ -67,7 +67,7 @@ def check_entry(sig: Signal, acct: Account, cfg: dict, costs: CostModel, now: da
         return Verdict(False, reasons)
 
     max_value = min(acct.equity * cfg["max_position_pct"] / 100, acct.cash_available)
-    size = size_position(sig.entry, sig.stop, budget, costs, cfg["slippage_pct"], max_value)
+    size = size_position(sig.entry, sig.stop, budget, costs, slip_pct(cfg), max_value)
     if size.qty < 1:
         reasons.append("size is zero: %s" % size.limited_by)
         return Verdict(False, reasons)

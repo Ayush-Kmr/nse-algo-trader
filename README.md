@@ -10,14 +10,14 @@ Every rupee figure is **net of Angel One charges and slippage**. No real orders 
 | every 5 min, 09:32–15:27 | `paper-trade` | fetch completed 5-min bars, manage open positions, look for entries, risk-check, paper-fill |
 | 15:15 | (inside `paper-trade`) | hard square-off of anything still open |
 | 15:45 | `end-of-day` | daily report → `reports/daily/`, trades → `journal/trades.csv`, state committed |
-| Sat 10:00 | `backtest` | replay the last 60 days through the same engine → `reports/backtest-latest.md` |
+| Sat 10:00 | `backtest` | backtest, signal study and walk-forward on the last 60 days → `reports/` |
 | every push | `tests` | offline unit tests |
 
 Your laptop can be off. A failed run (e.g. no data at all) turns red and GitHub emails you.
 
 **The clock is cron-job.org, not GitHub.** GitHub's scheduler ran 1 of 72 ticks on its first day and
 skipped end-of-day. cron-job.org now triggers the runs on IST time, and it emails you after 2 failed
-calls. GitHub's cron remains as a sparse backup: hourly ticks from 09:47 and end-of-day at 16:15.
+calls. GitHub's cron remains as a sparse backup: hourly ticks from 10:17 and end-of-day at 16:15.
 
 Telegram is the final check: **no "engine live" message by about 09:45 on a trading day means ticks
 are not running.** A gap of 20+ minutes also alerts, and the end-of-day message shows how many of
@@ -60,7 +60,8 @@ included — fits 0.5% of equity.
 Angel One's charges page and marked `verified: false` until matched to a real contract note.
 
 **Paper fills** are conservative: stop and target in the same bar → the stop wins; a gap through the
-stop fills at the open; square-off is a marketable limit, not a market order. If a tick runs late,
+stop fills at the open; square-off is a marketable limit, not a market order. Every fill pays 0.05%
+slippage plus 0.01% half spread (both assumptions). If a tick runs late,
 the entry uses the latest close, and a signal that has moved more than 0.3% is dropped, not chased.
 
 **Regime filter**: no new longs while the Nifty 50 index is below its day's open. Missing index data → no entries.
@@ -90,12 +91,22 @@ the entry uses the latest close, and a signal that has moved more than 0.3% is d
 5. Test it: `gh workflow run telegram-test.yml -R Ayush-Kmr/nse-algo-trader`. A failed run shows
    Telegram's reason, such as `chat not found` (wrong id) or `Forbidden` (bot is not an admin).
 
+## Telegram commands
+
+Post these in the channel: `/status`, `/positions`, `/trades`, `/pnl`, `/schedule`, `/help`. They
+are read-only and only your channel is answered. Replies arrive at the next tick, so up to 5 minutes
+in market hours. Outside market hours they depend on two best-effort runs a day, which can be hours
+late or skipped.
+
 ## Local use
 
 ```bash
 python3 -m unittest discover -s tests -t .       # offline tests
 python3 -m algo backtest                           # 60 days, net of costs
 python3 -m algo experiments                        # every variant in experiments.json, same data
+python3 -m algo signals                            # every signal, without portfolio limits
+python3 -m algo walkforward                        # pick on the past, score on unseen days
+python3 -m algo commands                           # answer waiting Telegram commands now
 python3 -m algo tick --now "2026-10-29 10:15"      # one step at a pinned time
 python3 -m algo status
 python3 -m algo eod
@@ -108,7 +119,8 @@ Python 3.9+, standard library only. Nothing to install.
 See `reports/backtest-latest.md`. The first run (2026-10-29, 59 sessions, 25 Nifty names) **lost money
 net of costs**, and charges were about twice the gross loss. That is the point of the backtest gate:
 no strategy here has shown an edge yet. A second round tested 12 pre-registered variants (exits,
-filters, ranges): all lost in-sample. Details and next ideas: `docs/RESEARCH_LOG.md`.
+filters, ranges): all lost in-sample. A signal study of 472 signals then showed the entries lose even
+before charges (−0.20R), and walk-forward lost on unseen days. Details: `docs/RESEARCH_LOG.md`.
 
 ## Why this cannot place real orders (yet)
 
@@ -122,7 +134,7 @@ changing IPs, so live trading needs a VPS. The gates before `algo/broker/angelon
 3. Static-IP VPS, Angel One compliance confirmed, broker-resident stops + a separate supervisor
 4. Your explicit go-ahead, then minimum size
 
-Design and audit: `docs/UNATTENDED_DESIGN.md`, `docs/PHASE1_AUDIT.md`.
+Architecture: `docs/ARCHITECTURE.md`. Design and audit: `docs/UNATTENDED_DESIGN.md`, `docs/PHASE1_AUDIT.md`.
 
 ## Limits of the data
 

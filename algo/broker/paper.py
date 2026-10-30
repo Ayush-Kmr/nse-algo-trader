@@ -12,9 +12,10 @@ from typing import Optional, Tuple
 
 from ..costs import CostModel
 from ..models import Bar, Position, Signal, Trade, round_tick
+from .base import Broker
 
 
-class PaperBroker:
+class PaperBroker(Broker):
     def __init__(self, costs: CostModel, slippage_pct: float, tick: float):
         self.costs = costs
         self.slip = slippage_pct / 100

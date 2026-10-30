@@ -20,11 +20,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: python -m algo --quiet backtest
+      - run: python -m algo --quiet signals
+      - run: python -m algo --quiet walkforward
       - name: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports/backtest-latest.md reports/backtest-latest.json
+          git add reports/backtest-latest.md reports/backtest-latest.json reports/signals-latest.md reports/walkforward-latest.md
           git diff --cached --quiet && exit 0
           git commit -m "backtest: $(date -u +%F)"
           git pull --rebase

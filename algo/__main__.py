@@ -1,4 +1,4 @@
-"""python -m algo tick | eod | backtest | experiments | status | telegram-test"""
+"""python -m algo tick | eod | backtest | experiments | signals | walkforward | status | commands | telegram-test"""
 from __future__ import annotations
 
 import argparse
@@ -7,7 +7,9 @@ import os
 import sys
 
 from . import backtest as bt
+from . import commands
 from . import experiments as ex
+from . import research
 from .data import YahooSource, load_history, save_history
 from .engine import Engine, new_state
 from .notify import event_notifier, send, telegram
@@ -47,6 +49,9 @@ def kill_switch_on() -> bool:
 
 def cmd_tick(a, cfg) -> int:
     now = parse_now(a.now) if a.now else now_ist()
+    state = load_state(cfg)
+    if not a.quiet:
+        commands.process(state, cfg, kill_switch_on())
     if not is_trading_day(now.date(), cfg["holidays"]):
         print("%s: not a trading day." % now.date())
         return 0
@@ -54,7 +59,6 @@ def cmd_tick(a, cfg) -> int:
         print("%s IST: market closed, nothing to do." % now.strftime("%H:%M"))
         return 0
 
-    state = load_state(cfg)
     index = cfg["regime"]["index"]
     bars, errors = YahooSource().today(cfg["universe"] + [index], now, cfg.get("bar_grace_seconds", 0))
     index_bars = bars.pop(index, None)
@@ -84,6 +88,8 @@ def cmd_tick(a, cfg) -> int:
 def cmd_eod(a, cfg) -> int:
     state = load_state(cfg)
     now = parse_now(a.now) if a.now else now_ist()
+    if not a.quiet:
+        commands.process(state, cfg, kill_switch_on())
     if is_trading_day(now.date(), cfg["holidays"]) and state.get("date") != now.date().isoformat():
         msg = "🚨 [PAPER] %s: no tick ran today, so nothing was traded. Check the paper-trade workflow." % now.date()
         print(msg)
@@ -165,6 +171,32 @@ def cmd_backtest(a, cfg) -> int:
     return 0
 
 
+def _write(name: str, md: str) -> None:
+    print(md)
+    path = os.path.join(ROOT, "reports", name)
+    with open(path, "w") as fh:
+        fh.write(md)
+    print("wrote %s" % os.path.relpath(path, ROOT))
+
+
+def cmd_signals(a, cfg) -> int:
+    hist = get_history(cfg, a.range, a.refresh)
+    _write("signals-latest.md", research.study_markdown(research.signal_study(cfg, hist, now_ist().date())))
+    return 0
+
+
+def cmd_walkforward(a, cfg) -> int:
+    hist = get_history(cfg, a.range, a.refresh)
+    variants = ex.load_variants(os.path.join(ROOT, "experiments.json"))
+    _write("walkforward-latest.md", research.walk_markdown(research.walk_forward(cfg, hist, variants, now_ist().date())))
+    return 0
+
+
+def cmd_commands(a, cfg) -> int:
+    print("answered %d command(s)" % commands.process(load_state(cfg), cfg, kill_switch_on()))
+    return 0
+
+
 def cmd_status(a, cfg) -> int:
     state = load_state(cfg)
     print(json.dumps({k: state[k] for k in ("date", "equity", "positions")}, indent=1))
@@ -190,12 +222,19 @@ def main(argv=None) -> int:
     e = sub.add_parser("experiments", help="run every variant in experiments.json on the same data")
     e.add_argument("--range", default="60d")
     e.add_argument("--refresh", action="store_true")
+    for name, text in (("signals", "study every signal, without portfolio limits"),
+                       ("walkforward", "pick variants on past data, score them on unseen data")):
+        r = sub.add_parser(name, help=text)
+        r.add_argument("--range", default="60d")
+        r.add_argument("--refresh", action="store_true")
+    sub.add_parser("commands", help="answer waiting Telegram commands now")
     sub.add_parser("status")
     sub.add_parser("telegram-test", help="send one test message and print why it failed, if it did")
     a = p.parse_args(argv)
     cfg = load_cfg(a.config)
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
-            "status": cmd_status, "telegram-test": cmd_telegram_test}[a.cmd](a, cfg)
+            "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
+            "walkforward": cmd_walkforward, "commands": cmd_commands}[a.cmd](a, cfg)
 
 
 if __name__ == "__main__":

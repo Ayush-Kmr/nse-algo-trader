@@ -14,6 +14,7 @@
   "max_data_age_minutes": 15,
   "bar_grace_seconds": 60,
   "slippage_pct": 0.05,
+  "half_spread_pct": 0.01,
   "tick_size": 0.05,
   "bar_minutes": 5,
   "session_open": "09:15",

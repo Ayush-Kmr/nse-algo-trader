@@ -9,6 +9,7 @@ name: paper-trade
 on:
   schedule:
     - cron: "47 4-9 * * 1-5"
+    - cron: "20 11,15 * * *"   # best effort, for Telegram commands outside market hours
   workflow_dispatch:
 
 concurrency:

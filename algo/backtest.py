@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 
 from .data import by_day
 from .engine import Engine, new_state
+from .models import slip_pct
 from .timeutil import hhmm
 
 
@@ -143,8 +144,8 @@ def to_markdown(rep: dict, cfg: dict) -> str:
     L = ["# Backtest report", "",
          "Data: %s to %s (%d sessions), 5-minute bars, Yahoo Finance. Out-of-sample from **%s**." % (
              rep["first_day"], rep["last_day"], rep["days"], rep["oos_from"]),
-         "Strategies: %s. Capital %s, risk %s%%/trade, daily limit %s%%. All figures **net** of Angel One charges and %s%% slippage." % (
-             ", ".join(cfg["strategies"]), cfg["capital"], cfg["risk_per_trade_pct"], cfg["daily_loss_limit_pct"], cfg["slippage_pct"]),
+         "Strategies: %s. Capital %s, risk %s%%/trade, daily limit %s%%. All figures **net** of Angel One charges and %s%% per fill (slippage + half spread)." % (
+             ", ".join(cfg["strategies"]), cfg["capital"], cfg["risk_per_trade_pct"], cfg["daily_loss_limit_pct"], round(slip_pct(cfg), 4)),
          "", "**Verdict: %s**" % rep["verdict"], "",
          "| slice | trades | win % | net ₹ | gross ₹ | charges ₹ | ₹/trade | avg R | PF | max DD ₹ |",
          "|---|---|---|---|---|---|---|---|---|---|"]
