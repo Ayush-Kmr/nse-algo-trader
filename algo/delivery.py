@@ -204,7 +204,7 @@ def run(closes: dict, traded: dict = None) -> dict:
     return {"first": str(p.days[ends[0]]), "last": str(p.days[ends[-1]]), "months": len(ew), "stocks": len(names), "dynamic": bool(members), "rows": rows}
 
 
-def to_markdown(rep: dict) -> str:
+def to_markdown(rep: dict, note: str = "Companies that failed are missing from the data, so real results would be lower. Tax is not included.") -> str:
     L = ["# Delivery strategies", "",
          "%s to %s (%d months), %s, ₹50,000, 10 slots, monthly. Prices exclude dividends." % (
              rep["first"], rep["last"], rep["months"],
@@ -219,5 +219,5 @@ def to_markdown(rep: dict) -> str:
                 r["name"], r["cagr"], r["dd"], r["final"], r["sales"], r["early"], r["late"], r["low"], "yes" if r["passed"] else "no"))
         else:
             L.append("| %s | %+.1f%% | %.0f%% | ₹%.0f | | | | | benchmark |" % (r["name"], r["cagr"], r["dd"], r["final"]))
-    L += ["", "Companies that failed are missing from the data, so real results would be lower. Tax is not included.", ""]
+    L += ["", note, ""]
     return "\n".join(L)

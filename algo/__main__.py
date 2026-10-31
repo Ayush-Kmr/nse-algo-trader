@@ -1,7 +1,9 @@
-"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | weekly | survey | delivery | pit | extra | status | commands | telegram-test"""
+"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | weekly | survey | delivery | pit | ingest | lab | live | extra | status | commands | telegram-test"""
 from __future__ import annotations
 
 import argparse
+import asyncio
+import csv
 import json
 from datetime import date, timedelta
 import os
@@ -15,8 +17,12 @@ from . import delivery
 from . import demo
 from . import experiments as ex
 from . import extra
+from . import lab
 from . import learn
+from . import feeds
+from . import store
 from . import longtest
+from . import playbook
 from . import research
 from . import stability
 from . import survey
@@ -321,7 +327,97 @@ def cmd_pit(a, cfg) -> int:
     rep = delivery.run(closes, traded)
     gone = sum(1 for s, c in closes.items() if s != delivery.INDEX and max(c) < now_ist().date() - timedelta(days=30))
     _write("pit-latest.md", "%d of the %d symbols stopped trading before the end, and they are included.\n\n" % (
-        gone, len(closes)) + delivery.to_markdown(rep))
+        gone, len(closes)) + delivery.to_markdown(rep, "Delisted stocks are included, but only stocks Yahoo still lists have exact split "
+        "adjustment. The rest use clean-ratio matching, so a bonus or demerger can look like a crash. That most affects strategies "
+        "buying big fallers: treat the 1-month losers row as unreliable. Tax is not included."))
+    return 0
+
+
+def _universe(path: str = "universe_200.txt") -> list:
+    with open(os.path.join(ROOT, path)) as fh:
+        return fh.read().split()
+
+
+def cmd_ingest(a, cfg) -> int:
+    """Download, validate and store broker bars. Stops if the token is missing: nothing is invented."""
+    end = now_ist().date() - timedelta(days=1)
+    start = end - timedelta(days=a.days)
+    universe = _universe()
+    root = os.path.join(ROOT, "data", "market")
+    if a.source == "dhan":
+        src, ids = feeds.DhanSource(), feeds.dhan_security_ids(universe)
+    else:
+        src = feeds.UpstoxSource()
+        ids = {r["Symbol"].strip(): r["ISIN Code"].strip() for r in csv.DictReader(open(os.path.join(ROOT, "universe_200.csv")))}
+    bad = 0
+    for sym in universe:
+        if sym not in ids:
+            print("no instrument id for %s, skipped" % sym)
+            continue
+        bars = src.history(ids[sym], start, end, a.minutes)
+        rep = store.validate(sym, bars, a.minutes)
+        store.save(root, src.name, sym, store.clean(bars, rep), a.minutes, rep)
+        bad += len(rep["bad"])
+    print("stored in data/market/%s, %d bad bar(s) excluded" % (src.name, bad))
+    return 0
+
+
+def cmd_lab(a, cfg) -> int:
+    index = cfg["regime"]["index"]
+    today = now_ist().date()
+    if a.source == "yahoo":
+        hist = YahooSource(pause=0.05).history(_universe() + [index], "60d")
+    else:
+        folder = os.path.join(ROOT, "data", "market", a.source, "%dm" % a.minutes)
+        hist = {f[:-4].replace("_", "^", 1) if f.startswith("_") else f[:-4]: store.load(os.path.join(folder, f), a.minutes)
+                for f in os.listdir(folder) if f.endswith(".csv")}
+    reports = {s: store.validate(s, b, a.minutes) for s, b in hist.items()}
+    hist = {s: store.clean(b, reports[s]) for s, b in hist.items()}
+    print("%d symbols, %d bad bars excluded, %d gaps left as gaps" % (
+        len(hist), sum(len(r["bad"]) for r in reports.values()), sum(len(r["gaps"]) for r in reports.values())))
+    _write("lab-latest.md", lab.to_markdown(lab.run(cfg, hist, today), a.source))
+    return 0
+
+
+def cmd_playbook(a, cfg) -> int:
+    index = cfg["regime"]["index"]
+    today = now_ist().date()
+    names = _universe()
+    history = YahooSource(pause=0.05).history(names + [index], "60d")
+    history = {s: [b for b in bars if b.ts.date() < today] for s, bars in history.items()}
+    daily = {}
+    for s in names:
+        try:
+            bars = data.fetch_bars(s, "20y", "1d", retries=2, timeout=30)
+        except Exception as e:  # noqa: BLE001 - a missing stock narrows the test, it does not stop it
+            print("  skip %s: %s" % (s, type(e).__name__))
+            continue
+        daily[s] = [b for b in bars if b.ts.date() < today]
+    _write("playbook-latest.md", playbook.to_markdown(playbook.run(cfg, history, daily)))
+    return 0
+
+
+def cmd_live(a, cfg) -> int:
+    """Paper trading from the Dhan WebSocket. Needs an always-on machine, tokens and requirements-live.txt."""
+    from . import live
+    feeds._require("DHAN_ACCESS_TOKEN")
+    feeds._require("DHAN_CLIENT_ID")
+    ids = feeds.dhan_security_ids(cfg["universe"])
+    missing = sorted(set(cfg["universe"]) - set(ids))
+    if missing:
+        print("no Dhan id for: %s" % ", ".join(missing))
+    all_ids = dict(ids, **{cfg["regime"]["index"]: feeds.NIFTY_50_ID})
+    engine = live.PaperLive(cfg, load_state(cfg), all_ids, live.state_saver(STATE), os.path.join(ROOT, "state", "KILL"))
+
+    async def watch():
+        task = asyncio.create_task(live.run_dhan(engine, list(ids.values()), (feeds.NIFTY_50_ID,)))
+        while True:
+            await asyncio.sleep(5)
+            engine.check_stale(now_ist())
+            if task.done():
+                return task.result()
+
+    asyncio.run(watch())
     return 0
 
 
@@ -369,6 +465,15 @@ def main(argv=None) -> int:
     sub.add_parser("telegram-demo", help="post a labelled walk-through of the channel's messages")
     sub.add_parser("telegram-sim", help="replay made-up days through the real engine, alerts on")
     sub.add_parser("pit", help="delivery test on NSE bhavcopies, including delisted stocks")
+    g = sub.add_parser("ingest", help="download and validate broker bars (needs a token)")
+    g.add_argument("source", choices=["dhan", "upstox"])
+    g.add_argument("--minutes", type=int, default=5, choices=[1, 5])
+    g.add_argument("--days", type=int, default=365)
+    n = sub.add_parser("lab", help="four strategy families with train, validation and test splits")
+    n.add_argument("--source", default="yahoo", choices=["yahoo", "dhan", "upstox"])
+    n.add_argument("--minutes", type=int, default=5, choices=[1, 5])
+    sub.add_parser("playbook", help="day-trader-skill's rules on NSE stocks, with Indian charges")
+    sub.add_parser("live", help="paper trade from the Dhan WebSocket on an always-on machine")
     sub.add_parser("delivery", help="multi-month delivery strategies with real charges")
     sub.add_parser("extra", help="finer timing, news proxy and pairs tests")
     sub.add_parser("survey", help="contest of the main intraday strategy families")
@@ -388,7 +493,7 @@ def main(argv=None) -> int:
 def _dispatch(a, cfg) -> int:
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
             "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
-            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability, "weekly": cmd_weekly, "survey": cmd_survey, "delivery": cmd_delivery, "pit": cmd_pit, "extra": cmd_extra,
+            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability, "weekly": cmd_weekly, "survey": cmd_survey, "delivery": cmd_delivery, "ingest": cmd_ingest, "lab": cmd_lab, "live": cmd_live, "pit": cmd_pit, "playbook": cmd_playbook, "extra": cmd_extra,
             "telegram-demo": cmd_telegram_demo, "telegram-sim": cmd_telegram_sim}[a.cmd](a, cfg)
 
 

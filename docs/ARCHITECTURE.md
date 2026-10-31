@@ -66,6 +66,7 @@ the offline tests.
 | `algo/learn.py` | Walk-forward learned signal filter (research only) |
 | `algo/longtest.py` | Almost 3 years of hourly data on about 200 stocks |
 | `algo/survey.py` | Contest of 20 intraday strategies, long and short |
+| `algo/playbook.py` | day-trader-skill's rules on NSE stocks, with Indian charges |
 | `algo/weekly.py` | The Saturday learning run and report |
 | `algo/stability.py` | Stress test of the live path |
 | `algo/chart.py` | Chart images and plain-words alert captions |
@@ -118,6 +119,22 @@ the command.
 - **Sample:** 60 sessions from one market period, and today's Nifty names (survivorship bias).
 - **Tick size** is 0.05 for all stocks. This matters only for live orders; check it first.
 - **Charges** are from Angel One's page and unconfirmed against a contract note.
+
+## Broker data and live paper trading
+
+`algo/feeds.py` reads DhanHQ and Upstox history and parses Dhan's binary feed. `algo/store.py` validates
+bars and stores them with source metadata; gaps stay gaps. `algo/features.py` holds VWAP, EMA 9/20/50, RSI,
+ATR, relative volume and market direction. `algo/lab.py` tests four families with train, validation and
+test splits. `algo/live.py` builds bars from ticks, runs the same Engine, checks stops on every tick,
+detects stale feeds, and honours `state/KILL` or `KILL_SWITCH`. It needs an always-on machine and has
+no order path. None of the broker paths has run against a real account yet.
+
+```bash
+export DHAN_ACCESS_TOKEN=... DHAN_CLIENT_ID=...
+python3 -m algo ingest dhan --minutes 5 --days 365
+python3 -m algo lab --source dhan --minutes 5
+pip install -r requirements-live.txt && python3 -m algo live
+```
 
 ## Weekly learning
 

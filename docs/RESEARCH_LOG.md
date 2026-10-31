@@ -3,6 +3,46 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-31 — rules from day-trader-skill
+
+`python3 -m algo playbook` copies the rules of github.com/Jakeschincariol/day-trader-skill unchanged and
+adds Indian charges. **Nothing passed.** The repo models no costs, and it says its rules are not a promise.
+
+- **Opening-range breakout, midpoint stop.** 200 stocks, 60 sessions, 6,439 trades. About zero before costs
+  (−0.01R at a 2R target, −0.03R at 1R), then −₹85 to −₹89 a trade on ₹25,000. Filling at the signal bar's
+  close, as the repo's history does, changed the result by under ₹1 a trade.
+- **Five daily scanner setups,** next day open to close, 2006 to 2026, 200 of today's stocks. Every setup
+  lost in both halves (−₹93 to −₹112 a trade), near the −₹111 of buying every stock every day.
+- **Scanner plus breakout.** Best was oversold, +₹4 after slippage and −₹52 net on 512 trades, the best of
+  five on 60 sessions.
+- **Time Machine odds do not predict.** On 4,424 trades, when it said 39%, 50% and 61%, the target came first
+  52.7%, 49.2% and 50.3% of the time. Its replays draw each bar independently from all days, so they cannot
+  know that a breakout has just happened. Do not add it to alerts.
+
+**Oversold after a crash (one-off check, not a kept module).** Oversold stocks that fell 8%+ the day before,
+next day open to close, 200 of today's stocks, 20 years: 1,373 trades, +₹33 a trade net, but the lower bound
+was −₹485 and the halves disagree (−₹246, then +₹311). Other oversold days: 28,817 trades, −₹120. Not a pass.
+Today's stock list drops crashed companies that never recovered, which flatters exactly this group.
+
+Yahoo often drops bars after 15:15, so only 58 of 1,560 sessions in a 25-stock check had all 75 bars.
+Requiring full days cut the first Time Machine check to 361 trades; it now needs bars only up to 15:10.
+
+## 2026-10-31 — delisted stocks included, and the strategy lab
+
+**Delivery with delisted stocks (`python3 -m algo pit`).** Free NSE bhavcopies, 4,530 symbols, 1,521 of
+which stopped trading. Each month used the 200 most-traded stocks at that time. Jan 2009 to Sep 2026,
+real charges, no dividends or tax. Nothing passed. 12-1 momentum +15.3% a year (47% worst fall), against
++13.0% for the Nifty ETF and +12.8% for equal-weight. The top-30 buffer made +19.1% with less than half
+the selling, the best result, but its lower bound was −8.0%. It trailed equal-weight slightly in the
+early half and led only in the late half. Survivorship had inflated the first momentum run from +15.3%
+to +40.9% a year. Treat "1-month losers" (−100%) as unreliable: stocks not on Yahoo use clean-ratio split
+matching, so a corporate action can look like a crash.
+
+**Strategy lab (`python3 -m algo lab`).** Opening-range breakout, VWAP continuation, trend following and
+mean reversion, long and short, 60/20/20 splits, next-bar fills, 200 stocks, Yahoo 5-minute bars. All 8
+lost on training and validation, so none reached the test set. **No reliable trading edge was found.**
+Only 60 sessions, and the Dhan and Upstox paths have not run with a real token.
+
 ## 2026-10-31 — Groww intraday guide
 
 The guide gives ideas with no complete rules and no evidence, so exact rules were fixed before running:
