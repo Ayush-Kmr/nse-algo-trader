@@ -14,20 +14,39 @@ from concurrent.futures import ThreadPoolExecutor
 
 from . import data
 
-CAPITAL, SLOTS = 50000.0, 10
+CAPITAL, SLOTS, TOP = 50000.0, 10, 200
 ETF, INDEX = "NIFTYBEES", "^NSEI"
 STT, EXCH, SEBI, STAMP, GST, DP, SLIP = 0.001, 0.000030699, 0.000001, 0.00015, 0.18, 20.0, 0.0006
 TESTS = 6
 
 
-def fetch(symbols: list) -> dict:
+def fetch(symbols: list) -> tuple:
+    """-> ({symbol: {date: close}}, {symbol: {date: rupees traded}})"""
     def get(s):
         try:
-            return s, {b.ts.date(): b.close for b in data.fetch_bars(s, "20y", "1d", retries=2, timeout=30)}
+            return s, data.fetch_bars(s, "20y", "1d", retries=2, timeout=30)
         except Exception:  # noqa: BLE001 - a missing stock narrows the test, it does not stop it
             return s, None
     with ThreadPoolExecutor(max_workers=6) as pool:
-        return {s: c for s, c in pool.map(get, symbols) if c}
+        got = {s: b for s, b in pool.map(get, symbols) if b}
+    return ({s: {x.ts.date(): x.close for x in b} for s, b in got.items()},
+            {s: {x.ts.date(): x.close * x.volume for x in b} for s, b in got.items()})
+
+
+def by_turnover(p: "Prices", traded: dict, stocks: list, top: int = TOP) -> dict:
+    """{month-end bar: the `top` most-traded stocks over the prior 6 months}, so a stock counts only
+    once it was big at the time. Companies that failed are still missing, so bias is reduced, not gone."""
+    out = {}
+    for i in p.month_ends():
+        window = p.days[max(0, i - 125):i + 1]
+        scored = []
+        for s in stocks:
+            t = traded.get(s, {})
+            vals = [t[d] for d in window if t.get(d)]
+            if len(vals) >= 100:
+                scored.append((statistics.median(vals), s))
+        out[i] = [s for _, s in sorted(scored, reverse=True)[:top]]
+    return out
 
 
 def _brokerage(v: float) -> float:
@@ -98,7 +117,7 @@ def simulate(p: Prices, ends: list, stocks: list, rule) -> list:
             values.append(cash + sum(slots.values()))
         if k == len(ends) - 1:
             break
-        picks = rule(p, stocks, i)
+        picks = rule(p, stocks(i), i)
         for s in [x for x in slots if x not in picks]:
             cash += max(0.0, slots[s] - sell_cost(slots[s]))
             del slots[s]
@@ -115,7 +134,7 @@ def equal_weight(p: Prices, ends: list, stocks: list) -> list:
     """Hold all stocks equally, reset monthly, with no charges: a deliberately kind benchmark."""
     value, out = CAPITAL, []
     for a, b in zip(ends, ends[1:]):
-        r = [p.at(s, b) / p.at(s, a) - 1 for s in stocks if p.at(s, a) and p.at(s, b)]
+        r = [p.at(s, b) / p.at(s, a) - 1 for s in stocks(a) if p.at(s, a) and p.at(s, b)]
         value *= 1 + (sum(r) / len(r) if r else 0)
         out.append(value)
     return out
@@ -137,10 +156,12 @@ def _drawdown(v: list) -> float:
     return dd * 100
 
 
-def run(closes: dict) -> dict:
+def run(closes: dict, traded: dict = None) -> dict:
     p = Prices(closes)
-    stocks = [s for s in closes if s not in (ETF, INDEX)]
+    names = [s for s in closes if s not in (ETF, INDEX)]
     ends = [i for i in p.month_ends() if i > 260 and p.at(ETF, i)]
+    members = by_turnover(p, traded, names) if traded else None
+    stocks = (lambda i: members[i]) if members else (lambda i: names)
     ew = equal_weight(p, ends, stocks)
     etf = simulate(p, ends, stocks, lambda *_: [ETF])
     r_ew, r_etf = _monthly(ew), _monthly(etf)
@@ -158,13 +179,15 @@ def run(closes: dict) -> dict:
         beats_etf = statistics.mean(ex_etf[:half]) > 0 and statistics.mean(ex_etf[half:]) > 0
         rows.append({"name": name, "cagr": _cagr(v), "dd": _drawdown(v), "final": v[-1], "early": early, "late": late, "low": low,
                      "passed": early > 0 and late > 0 and low > 0 and beats_etf})
-    return {"first": str(p.days[ends[0]]), "last": str(p.days[ends[-1]]), "months": len(ew), "stocks": len(stocks), "rows": rows}
+    return {"first": str(p.days[ends[0]]), "last": str(p.days[ends[-1]]), "months": len(ew), "stocks": len(names), "dynamic": bool(members), "rows": rows}
 
 
 def to_markdown(rep: dict) -> str:
     L = ["# Delivery strategies", "",
-         "%s to %s (%d months), %d of today's Nifty 200 stocks, ₹50,000, 10 slots, monthly. Prices exclude dividends." % (
-             rep["first"], rep["last"], rep["months"], rep["stocks"]),
+         "%s to %s (%d months), %s, ₹50,000, 10 slots, monthly. Prices exclude dividends." % (
+             rep["first"], rep["last"], rep["months"],
+             "each month's 200 most-traded stocks from %d of today's Nifty 500" % rep["stocks"] if rep.get("dynamic")
+             else "%d of today's Nifty 200 stocks" % rep["stocks"]),
          "", "**Passed: %s**" % (", ".join(r["name"] for r in rep["rows"] if r.get("passed")) or "none"), "",
          "| strategy | a year | worst fall | ₹50,000 became | vs equal-weight, early half | late half | lower bound | pass |",
          "|---|---|---|---|---|---|---|---|"]
@@ -174,5 +197,5 @@ def to_markdown(rep: dict) -> str:
                 r["name"], r["cagr"], r["dd"], r["final"], r["early"], r["late"], r["low"], "yes" if r["passed"] else "no"))
         else:
             L.append("| %s | %+.1f%% | %.0f%% | ₹%.0f | | | | benchmark |" % (r["name"], r["cagr"], r["dd"], r["final"]))
-    L += ["", "All of this uses today's winners, so real results would be lower. Tax on gains is not included.", ""]
+    L += ["", "Companies that failed are missing from the data, so real results would be lower. Tax is not included.", ""]
     return "\n".join(L)

@@ -3,6 +3,36 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-31 — delivery, finer timing, news proxy and pairs
+
+`python3 -m algo delivery` and `python3 -m algo extra`. Reports: `reports/delivery-latest.md`,
+`reports/extra-latest.md`. Rules fixed in the code before the first run.
+
+**Intraday and pairs: all failed.** 5-minute and 15-minute range breaks, long and short: about −₹41 to
+−₹68 a trade late in the sample. Big gaps on heavy volume, used as a stand-in for news: −₹87 to
+−₹115. Same-industry pairs, 2,155 trades: −₹101.
+
+**Delivery: 12-1 momentum passed, with a serious caveat.** Jan 2009 to Sep 2026, ₹50,000, 10 stocks,
+monthly, real delivery charges, no dividends or tax: +40.9% a year, against +24.4% for an equal-weight
+hold of the same stocks and +13.2% for the Nifty ETF. The other five strategies failed.
+
+The stocks are today's Nifty 200, which already knows who survived and grew. That bias helps
+momentum more than most strategies, so +40.9% is not a realistic estimate.
+
+**Rerun with less hindsight: momentum no longer passes.** No free dated Nifty 200 membership exists,
+and Yahoo has no prices for delisted companies, so an exact point-in-time test is not possible. Instead,
+each month used the 200 most-traded stocks at that time, from today's Nifty 500. Momentum made +28.8% a
+year against +19.9% for equal-weight and +13.2% for the Nifty ETF, with a 39% worst fall. It led in both
+halves, but the corrected lower bound was −3.8% a year, so **it fails**. Failed companies are still
+missing, so even this is flattered.
+
+Real-world check on the same idea: Nifty200 Momentum 30 TRI, about 18.8% a year since April 2005 against
+13.9% for Nifty 200 TRI (HDFC material, June 2026; the early years are likely back-calculated). The
+tradable ETF `MOMENTUM.NS` went from 19.4 to 29.0 between Sep 2022 and Oct 2026, about 10% a year,
+against about 8.5% for `NIFTYBEES`, price only. That is a real but modest edge, and far below +40.9%.
+
+Not tested: options and order-book strategies, which have no honest free history.
+
 ## 2026-10-31 — strategy survey: 20 intraday strategies, long and short
 
 `python3 -m algo survey`, report in `reports/survey-latest.md`. List and rules fixed before running:

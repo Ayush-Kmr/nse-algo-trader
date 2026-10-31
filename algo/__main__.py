@@ -273,11 +273,15 @@ def cmd_survey(a, cfg) -> int:
 
 
 def cmd_delivery(a, cfg) -> int:
+    with open(os.path.join(ROOT, "universe_500.txt")) as fh:
+        wide = fh.read().split()
     with open(os.path.join(ROOT, "universe_200.txt")) as fh:
-        universe = fh.read().split()
-    closes = delivery.fetch(universe + [delivery.ETF, delivery.INDEX])
+        today = set(fh.read().split())
+    closes, traded = delivery.fetch(wide + [delivery.ETF, delivery.INDEX])
     print("fetched %d symbols" % len(closes))
-    _write("delivery-latest.md", delivery.to_markdown(delivery.run(closes)))
+    fixed = {s: c for s, c in closes.items() if s in today or s in (delivery.ETF, delivery.INDEX)}
+    _write("delivery-latest.md", delivery.to_markdown(delivery.run(closes, traded)) + "\n" +
+           delivery.to_markdown(delivery.run(fixed)))
     return 0
 
 

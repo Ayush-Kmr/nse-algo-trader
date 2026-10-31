@@ -27,13 +27,15 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       - run: python -m algo --quiet survey
+      - run: python -m algo --quiet delivery
+      - run: python -m algo --quiet extra
       - run: python -m algo --quiet stability
         continue-on-error: true   # a failure shows in the committed report
       - name: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports/backtest-latest.md reports/backtest-latest.json reports/signals-latest.md reports/walkforward-latest.md reports/learn-latest.md reports/longtest-latest.md reports/survey-latest.md reports/stability-latest.md
+          git add reports/backtest-latest.md reports/backtest-latest.json reports/signals-latest.md reports/walkforward-latest.md reports/learn-latest.md reports/longtest-latest.md reports/survey-latest.md reports/delivery-latest.md reports/extra-latest.md reports/stability-latest.md
           git diff --cached --quiet && exit 0
           git commit -m "backtest: $(date -u +%F)"
           git pull --rebase

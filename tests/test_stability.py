@@ -143,3 +143,26 @@ class SurveyTests(unittest.TestCase):
             out += [Bar(t + timedelta(hours=i), c, c + 1, c - 1, c, 1000.0, 60) for i in range(6)]
         ctx = dict(contexts(out, {}))
         self.assertEqual(ctx[sorted(ctx)[-1]]["streak"], -3)
+
+
+class DeliveryTests(unittest.TestCase):
+    def prices(self):
+        from algo import delivery
+        from datetime import date, timedelta
+        days = [date(2020, 1, 1) + timedelta(days=k) for k in range(200)]
+        closes = {n: {d: 100.0 + k * m for k, d in enumerate(days)} for n, m in
+                  (("A", 1), ("B", 2), (delivery.ETF, 1), (delivery.INDEX, 1))}
+        return delivery, delivery.Prices(closes), days
+
+    def test_delivery_charges_include_stt_both_ways_and_dp_on_sale(self):
+        from algo import delivery
+        self.assertGreater(delivery.buy_cost(5000), 5000 * 0.001)
+        self.assertGreater(delivery.sell_cost(5000), delivery.buy_cost(5000) + 15)
+
+    def test_a_stock_joins_only_once_it_has_traded_enough(self):
+        delivery, p, days = self.prices()
+        traded = {"A": {d: 100.0 for d in days[:150]}, "B": {d: 500.0 for d in days[150:]}}
+        members = delivery.by_turnover(p, traded, ["A", "B"], top=1)
+        ends = sorted(members)
+        self.assertEqual(members[ends[3]], ["A"])  # B has no history yet, so hindsight cannot pick it
+        self.assertEqual(members[ends[-1]], [])
