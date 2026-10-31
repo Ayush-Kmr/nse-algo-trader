@@ -6,20 +6,20 @@
 
 | test | side | trades | gross ₹/trade | early net ₹ | late net ₹ | late lower bound | pass |
 |---|---|---|---|---|---|---|---|
-| 5-minute range breakout | long | 7244 | -30.70 | -100.92 | -59.89 | -76.45 | no |
-| 5-minute range breakdown | short | 8687 | -13.21 | -69.86 | -68.04 | -83.74 | no |
-| 15-minute range breakout | long | 6553 | -26.82 | -93.72 | -63.37 | -79.84 | no |
-| 15-minute range breakdown | short | 7714 | -7.07 | -72.80 | -40.86 | -57.05 | no |
+| 5-minute range breakout | long | 7244 | -29.24 | -99.49 | -58.37 | -74.98 | no |
+| 5-minute range breakdown | short | 8687 | -14.49 | -71.33 | -68.92 | -84.63 | no |
+| 15-minute range breakout | long | 6553 | -25.23 | -92.16 | -61.73 | -78.26 | no |
+| 15-minute range breakdown | short | 7713 | -8.23 | -74.13 | -41.66 | -57.86 | no |
 
 ## News proxy: big gaps on heavy volume
 
 | test | side | trades | gross ₹/trade | early net ₹ | late net ₹ | late lower bound | pass |
 |---|---|---|---|---|---|---|---|
-| follow the gap | both | 925 | -31.32 | -74.44 | -114.89 | -162.48 | no |
-| fade the gap | both | 925 | -14.35 | -62.74 | -86.72 | -134.40 | no |
+| follow the gap | both | 910 | -30.58 | -73.71 | -114.43 | -162.83 | no |
+| fade the gap | both | 910 | -15.65 | -64.99 | -86.18 | -134.78 | no |
 
 ## Pairs trading
 
 | test | side | trades | gross ₹/trade | early net ₹ | late net ₹ | late lower bound | pass |
 |---|---|---|---|---|---|---|---|
-| same-industry pairs | both | 2155 | -27.16 | -88.29 | -101.36 | -108.34 | no |
+| same-industry pairs | both | 2153 | -26.62 | -88.29 | -100.32 | -107.29 | no |

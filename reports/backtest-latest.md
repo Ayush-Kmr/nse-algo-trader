@@ -7,23 +7,23 @@ Strategies: orb, vwap_reclaim. Capital 50000, risk 0.5%/trade, daily limit 1.0%.
 
 | slice | trades | win % | net ₹ | gross ₹ | charges ₹ | ₹/trade | avg R | PF | max DD ₹ |
 |---|---|---|---|---|---|---|---|---|---|
-| all | 68 | 33.8 | -4418.99 | -940.70 | 3478.29 | -64.99 | -0.296 | 0.4 | 5158.53 |
-| in-sample | 40 | 25.0 | -4440.85 | -2344.50 | 2096.35 | -111.02 | -0.506 | 0.22 | 4540.49 |
-| out-of-sample | 28 | 46.4 | 21.86 | 1403.80 | 1381.94 | 0.78 | 0.003 | 1.01 | 1060.68 |
-| strategy: orb | 63 | 34.9 | -3973.92 | -740.10 | 3233.82 | -63.08 | -0.281 | 0.42 | 4713.46 |
-| strategy: vwap_reclaim | 5 | 20.0 | -445.07 | -200.60 | 244.47 | -89.01 | -0.488 | 0.16 | 449.34 |
+| all | 69 | 33.3 | -4380.79 | -841.50 | 3539.29 | -63.49 | -0.282 | 0.41 | 5129.40 |
+| in-sample | 41 | 24.4 | -4396.36 | -2252.40 | 2143.96 | -107.23 | -0.478 | 0.23 | 4505.07 |
+| out-of-sample | 28 | 46.4 | 15.57 | 1410.90 | 1395.33 | 0.56 | 0.004 | 1.01 | 1067.46 |
+| strategy: orb | 65 | 33.8 | -4085.37 | -733.30 | 3352.07 | -62.85 | -0.279 | 0.42 | 4833.98 |
+| strategy: vwap_reclaim | 4 | 25.0 | -295.42 | -108.20 | 187.22 | -73.85 | -0.338 | 0.23 | 299.69 |
 
-Exits: stop 27, square-off 39, target 2
+Exits: stop 26, square-off 41, target 2
 
 Top reasons the risk engine blocked a signal:
 
-- max open positions (N) reached: 226
-- net reward:risk N below N: 210
-- size is zero: stop too far for the risk budget: 185
-- charges are N% of the risk budget (max N%): 94
-- position N below the minimum N: 68
+- max open positions (N) reached: 238
+- net reward:risk N below N: 211
+- size is zero: stop too far for the risk budget: 182
+- charges are N% of the risk budget (max N%): 95
+- position N below the minimum N: 76
 - net reward:risk -N below N: 20
-- size is zero: no cash or position cap left for one share: 12
-- daily loss limit: no room left (lost N, open risk N, limit N): 6
+- size is zero: no cash or position cap left for one share: 14
+- daily loss limit: no room left (lost N, open risk N, limit N): 12
 
 60 days of 5-minute data is a short sample. Treat any result as a hypothesis, not proof.
