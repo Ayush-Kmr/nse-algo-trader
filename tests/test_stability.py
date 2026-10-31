@@ -166,3 +166,67 @@ class DeliveryTests(unittest.TestCase):
         ends = sorted(members)
         self.assertEqual(members[ends[3]], ["A"])  # B has no history yet, so hindsight cannot pick it
         self.assertEqual(members[ends[-1]], [])
+
+
+class BhavTests(unittest.TestCase):
+    def zipped(self, text):
+        import io as _io
+        import zipfile
+        buf = _io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as z:
+            z.writestr("x.csv", text)
+        return buf.getvalue()
+
+    def test_reads_both_file_formats_and_keeps_surveillance_series(self):
+        from algo import bhav
+        old = "SYMBOL,SERIES,OPEN,HIGH,LOW,CLOSE,LAST,PREVCLOSE,TOTTRDQTY,TOTTRDVAL,TIMESTAMP,\nA,EQ,1,1,1,10,10,9,5,50,x,\nB,BE,1,1,1,8,8,8,5,40,x,\nC,N1,1,1,1,8,8,8,5,40,x,\n"
+        new = "TckrSymb,SctySrs,ClsPric,PrvsClsgPric,TtlTrfVal\nA,EQ,10,9,50\n"
+        self.assertEqual(bhav.parse(self.zipped(old)), [("A", 10.0, 9.0, 50.0), ("B", 8.0, 8.0, 40.0)])
+        self.assertEqual(bhav.parse(self.zipped(new)), [("A", 10.0, 9.0, 50.0)])
+
+    def test_a_split_is_not_a_crash(self):
+        import gzip
+        from datetime import date
+        from algo import bhav
+        with tempfile.TemporaryDirectory() as tmp:
+            for d, row in (("2020-01-01", "A,100,100,1\n"), ("2020-01-02", "A,50,100,1\n"), ("2020-01-03", "A,55,50,1\n")):
+                with gzip.open(os.path.join(tmp, d + ".csv.gz"), "wt") as fh:
+                    fh.write(row)
+            moves, _ = bhav.load(tmp)
+        closes = bhav.adjusted(moves)
+        self.assertEqual(closes["A"][date(2020, 1, 2)], 100.0)
+        self.assertAlmostEqual(closes["A"][date(2020, 1, 3)], 110.0)
+
+    def test_a_real_crash_stays_and_yahoo_wins_when_it_has_the_stock(self):
+        from datetime import date
+        from algo import bhav
+        a, b = date(2020, 1, 1), date(2020, 1, 2)
+        moves = {"X": [(a, 1.0), (b, 0.45)]}
+        self.assertAlmostEqual(bhav.adjusted(moves)["X"][b], 45.0)
+        self.assertAlmostEqual(bhav.adjusted(moves, {"X": {a: 10.0, b: 9.0}})["X"][b], 90.0)
+
+    def test_urls_cover_both_eras(self):
+        from datetime import date
+        from algo import bhav
+        self.assertIn("cm28JUN2024bhav", bhav.urls(date(2024, 6, 28))[0])
+        self.assertIn("20261029_F_0000", bhav.urls(date(2026, 10, 29))[0])
+
+    def test_quarterly_keeps_holdings_between_quarters(self):
+        from algo import delivery
+        p = mock.Mock(days={5: __import__("datetime").date(2020, 4, 30)})
+        self.assertEqual(delivery._quarterly(p, [], 5, ["X"]), ["X"])
+
+
+class GuideTests(unittest.TestCase):
+    def test_rsi_extremes(self):
+        from algo import extra
+        self.assertGreater(extra._rsi([float(x) for x in range(1, 40)])[-1], 95)
+        self.assertLess(extra._rsi([float(x) for x in range(40, 1, -1)])[-1], 5)
+
+    def test_bullish_divergence_is_found(self):
+        from algo import extra
+        from tests.helpers import D, day
+        down = [(110 - i, 110 - i + .2, 110 - i - .5, 110 - i - .4, 100) for i in range(20)]
+        bounce = [(91 + i * .5, 91.8 + i * .5, 90.8 + i * .5, 91.5 + i * .5, 100) for i in range(14)]
+        slow = [(97.5, 97.6, 89.5, 97.4, 100), (97.4, 97.8, 88.9, 97.7, 100), (97.7, 98, 97.5, 97.9, 100)]
+        self.assertIsInstance(extra.divergence(day(D, down + bounce + slow), 1, use_macd=True), int)

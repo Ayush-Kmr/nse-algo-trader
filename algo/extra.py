@@ -60,6 +60,73 @@ def finer(cfg: dict, history: dict, exclude_date=None) -> list:
     return [summary(n, "long" if tests[n][0] > 0 else "short", t, cut, len(tests)) for n, t in out.items()]
 
 
+def _rsi(closes: list, n: int = 14) -> list:
+    out, up, down = [50.0] * len(closes), 0.0, 0.0
+    for i in range(1, len(closes)):
+        ch = closes[i] - closes[i - 1]
+        gain, loss = max(ch, 0.0), max(-ch, 0.0)
+        up, down = (up * (n - 1) + gain) / n, (down * (n - 1) + loss) / n
+        out[i] = 100 - 100 / (1 + up / down) if down else 100.0
+    return out
+
+
+def _ema(xs: list, n: int) -> list:
+    out, k = [xs[0]], 2 / (n + 1)
+    for x in xs[1:]:
+        out.append(out[-1] + k * (x - out[-1]))
+    return out
+
+
+def divergence(bars: list, side: int, use_macd: bool = False):
+    """First bar with a new 25-bar extreme that the oscillator does not confirm, closing back the other way."""
+    closes = [b.close for b in bars]
+    osc = [a - b for a, b in zip(_ema(closes, 12), _ema(closes, 26))] if use_macd else _rsi(closes)
+    for i in range(30, len(bars) - 1):
+        if bars[i].ts.hour >= 14 and bars[i].ts.minute >= 45 or bars[i].ts.hour > 14:
+            return None
+        b = bars[i]
+        past = range(i - 30, i - 5)
+        if side > 0:
+            j = min(past, key=lambda k: bars[k].low)
+            if b.low < bars[j].low and osc[i] > osc[j] and b.close > b.open and (use_macd or osc[i] < 35):
+                return i
+        else:
+            j = max(past, key=lambda k: bars[k].high)
+            if b.high > bars[j].high and osc[i] < osc[j] and b.close < b.open and (use_macd or osc[i] > 65):
+                return i
+    return None
+
+
+def guide(cfg: dict, history: dict, exclude_date=None) -> list:
+    """Groww's guide gives no full rules, so these were fixed here: RSI 14 and MACD 12/26 divergence on
+    5-minute bars, and its 3%+ gap with a 15-minute range break. Same costs, 1.5% stop, out by the close."""
+    costs, slip = CostModel(cfg["costs"]), slip_pct(cfg) / 100
+    days = sorted({d for b in history.values() for d in by_day(b) if d != exclude_date})
+    cut = days[int(len(days) * 2 / 3)]
+    tests = {"RSI divergence, buy": 1, "RSI divergence, sell": -1, "MACD divergence, buy": 1, "MACD divergence, sell": -1,
+             "3% gap up, range break": 1, "3% gap down, range break": -1}
+    out = {n: [] for n in tests}
+    for sym, bars_all in history.items():
+        if sym.startswith("^"):
+            continue
+        prev = None
+        for d, bars in sorted(by_day(bars_all).items()):
+            if d != exclude_date and len(bars) >= 40:
+                for name, side in tests.items():
+                    if name.startswith("3%"):
+                        gap = (bars[0].open - prev) / prev * 100 if prev else 0.0
+                        if side * gap < 3:
+                            continue
+                        hi, lo = max(b.high for b in bars[:3]), min(b.low for b in bars[:3])
+                        i = _first_close(bars, (lambda b: b.close > hi) if side > 0 else (lambda b: b.close < lo), 3)
+                    else:
+                        i = divergence(bars, side, name.startswith("MACD"))
+                    if i is not None:
+                        out[name].append((d,) + trade(bars, i, side, slip, costs))
+            prev = bars[-1].close
+    return [summary(n, "long" if tests[n] > 0 else "short", t, cut, len(tests)) for n, t in out.items()]
+
+
 def news_proxy(cfg: dict, history: dict, exclude_date=None) -> list:
     costs, slip = CostModel(cfg["costs"]), slip_pct(cfg) / 100
     index = cfg["regime"]["index"]

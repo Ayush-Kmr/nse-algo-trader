@@ -3,6 +3,17 @@
 Every idea tested, kept even when it fails. Results: `reports/experiments-latest.md`.
 Run again with `python3 -m algo experiments` (add `--refresh` for new data).
 
+## 2026-10-31 — Groww intraday guide
+
+The guide gives ideas with no complete rules and no evidence, so exact rules were fixed before running:
+RSI 14 and MACD 12/26 divergence on 5-minute bars, plus a 3%+ gap with a 15-minute range break. About
+200 stocks, 60 days, ₹25,000 a trade, 1.5% stop. Report: `reports/extra-latest.md`.
+
+All four divergence tests lose before charges (−₹39 to −₹48 a trade) and −₹70 to −₹121 after them late
+in the sample. The 3% gap had too few trades in 60 days to judge (10 and 21), but the same idea on 925
+hourly trades lost. **Nothing passed.** The guide's stop-after-two-losses rule is already covered: two
+0.5% losses reach the 1% daily limit.
+
 ## 2026-10-31 — delivery, finer timing, news proxy and pairs
 
 `python3 -m algo delivery` and `python3 -m algo extra`. Reports: `reports/delivery-latest.md`,

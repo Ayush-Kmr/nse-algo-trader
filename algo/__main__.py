@@ -1,13 +1,15 @@
-"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | weekly | survey | delivery | extra | status | commands | telegram-test"""
+"""python -m algo tick | eod | backtest | experiments | signals | walkforward | learn | stability | weekly | survey | delivery | pit | extra | status | commands | telegram-test"""
 from __future__ import annotations
 
 import argparse
 import json
+from datetime import date, timedelta
 import os
 import sys
 import time
 
 from . import backtest as bt
+from . import bhav
 from . import commands
 from . import delivery
 from . import demo
@@ -19,6 +21,7 @@ from . import research
 from . import stability
 from . import survey
 from . import weekly
+from . import data
 from .data import YahooSource, load_history, save_history
 from .engine import Engine, new_state
 from .chart import chart_notifier
@@ -295,8 +298,30 @@ def cmd_extra(a, cfg) -> int:
     industry = extra.load_industries(os.path.join(ROOT, "universe_200.csv"))
     _write("extra-latest.md", extra.to_markdown({
         "Finer timing, 5-minute bars": extra.finer(cfg, five, today),
+        "Groww guide rules, 5-minute bars": extra.guide(cfg, five, today),
         "News proxy: big gaps on heavy volume": extra.news_proxy(cfg, hourly, today),
         "Pairs trading": extra.pairs(cfg, hourly, industry, today)}))
+    return 0
+
+
+def cmd_pit(a, cfg) -> int:
+    root = os.path.join(ROOT, "data", "bhav")
+    print(bhav.download(root, date(2008, 1, 1), now_ist().date() - timedelta(days=1)))
+    moves, traded = bhav.load(root)
+    index = {b.ts.date(): b.close for b in data.fetch_bars(delivery.INDEX, "20y", "1d", retries=2, timeout=30)}
+    closes = bhav.adjusted(moves)
+    closes[delivery.INDEX] = index
+    p = delivery.Prices(closes)
+    names = bhav.stocks_only(s for s in closes if s not in (delivery.ETF, delivery.INDEX))
+    ever = sorted({s for m in delivery.by_turnover(p, traded, names).values() for s in m})
+    yahoo, _ = delivery.fetch(ever + [delivery.ETF])
+    print("%d symbols, %d ever in the top 200, %d on Yahoo" % (len(closes), len(ever), len(yahoo)))
+    closes = bhav.adjusted(moves, yahoo)
+    closes[delivery.INDEX] = index
+    rep = delivery.run(closes, traded)
+    gone = sum(1 for s, c in closes.items() if s != delivery.INDEX and max(c) < now_ist().date() - timedelta(days=30))
+    _write("pit-latest.md", "%d of the %d symbols stopped trading before the end, and they are included.\n\n" % (
+        gone, len(closes)) + delivery.to_markdown(rep))
     return 0
 
 
@@ -343,6 +368,7 @@ def main(argv=None) -> int:
             r.add_argument("--no-regime", action="store_true", help="drop the Nifty green-day filter")
     sub.add_parser("telegram-demo", help="post a labelled walk-through of the channel's messages")
     sub.add_parser("telegram-sim", help="replay made-up days through the real engine, alerts on")
+    sub.add_parser("pit", help="delivery test on NSE bhavcopies, including delisted stocks")
     sub.add_parser("delivery", help="multi-month delivery strategies with real charges")
     sub.add_parser("extra", help="finer timing, news proxy and pairs tests")
     sub.add_parser("survey", help="contest of the main intraday strategy families")
@@ -362,7 +388,7 @@ def main(argv=None) -> int:
 def _dispatch(a, cfg) -> int:
     return {"tick": cmd_tick, "eod": cmd_eod, "backtest": cmd_backtest, "experiments": cmd_experiments,
             "status": cmd_status, "telegram-test": cmd_telegram_test, "signals": cmd_signals,
-            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability, "weekly": cmd_weekly, "survey": cmd_survey, "delivery": cmd_delivery, "extra": cmd_extra,
+            "walkforward": cmd_walkforward, "commands": cmd_commands, "learn": cmd_learn, "stability": cmd_stability, "weekly": cmd_weekly, "survey": cmd_survey, "delivery": cmd_delivery, "pit": cmd_pit, "extra": cmd_extra,
             "telegram-demo": cmd_telegram_demo, "telegram-sim": cmd_telegram_sim}[a.cmd](a, cfg)
 
 

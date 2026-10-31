@@ -12,12 +12,12 @@ from __future__ import annotations
 import statistics
 from concurrent.futures import ThreadPoolExecutor
 
-from . import data
+from . import bhav, data
 
 CAPITAL, SLOTS, TOP = 50000.0, 10, 200
 ETF, INDEX = "NIFTYBEES", "^NSEI"
 STT, EXCH, SEBI, STAMP, GST, DP, SLIP = 0.001, 0.000030699, 0.000001, 0.00015, 0.18, 20.0, 0.0006
-TESTS = 6
+TESTS = 8
 
 
 def fetch(symbols: list) -> tuple:
@@ -83,9 +83,25 @@ class Prices:
         return b / a - 1 if a and b else None
 
 
-def _top(p: Prices, stocks: list, i: int, score) -> list:
+def _top(p: Prices, stocks: list, i: int, score, n: int = SLOTS) -> list:
     scored = [(score(s), s) for s in stocks if p.at(s, i - 252)]
-    return [s for v, s in sorted((x for x in scored if x[0] is not None), reverse=True)[:SLOTS]]
+    return [s for v, s in sorted((x for x in scored if x[0] is not None), reverse=True)[:n]]
+
+
+def _momentum(p: Prices, stocks: list, i: int, n: int = SLOTS) -> list:
+    return _top(p, stocks, i, lambda s: p.ret(s, i, 252, 21), n)
+
+
+def _quarterly(p: Prices, stocks: list, i: int, held: list) -> list:
+    """Fewer trades: only change the portfolio every third month."""
+    return _momentum(p, stocks, i) if p.days[i].month % 3 == 0 or not held else held
+
+
+def _buffered(p: Prices, stocks: list, i: int, held: list) -> list:
+    """Fewer trades: keep a holding until it leaves the top 30, then fill from the top."""
+    ranked = _momentum(p, stocks, i, 30)
+    keep = [s for s in held if s in ranked]
+    return keep + [s for s in ranked if s not in keep][:SLOTS - len(keep)]
 
 
 def _vol(p: Prices, s: str, i: int):
@@ -98,18 +114,22 @@ def _uptrend(p: Prices, i: int) -> bool:
 
 
 STRATEGIES = {
-    "12-1 momentum": lambda p, st, i: _top(p, st, i, lambda s: p.ret(s, i, 252, 21)),
-    "momentum with market filter": lambda p, st, i: _top(p, st, i, lambda s: p.ret(s, i, 252, 21)) if _uptrend(p, i) else [],
-    "near 52-week high": lambda p, st, i: _top(p, st, i, lambda s: p.at(s, i) / max(x for x in p.series[s][i - 251:i + 1] if x)),
-    "low volatility": lambda p, st, i: _top(p, st, i, lambda s: _vol(p, s, i)),
-    "1-month losers": lambda p, st, i: _top(p, st, i, lambda s: -p.ret(s, i, 21) if p.ret(s, i, 21) is not None else None),
-    "Nifty ETF with 200-day filter": lambda p, st, i: [ETF] if _uptrend(p, i) else [],
+    "12-1 momentum": lambda p, st, i, held: _top(p, st, i, lambda s: p.ret(s, i, 252, 21)),
+    "momentum, quarterly": lambda p, st, i, held: _quarterly(p, st, i, held),
+    "momentum, keep until out of top 30": lambda p, st, i, held: _buffered(p, st, i, held),
+    "momentum with market filter": lambda p, st, i, held: _top(p, st, i, lambda s: p.ret(s, i, 252, 21)) if _uptrend(p, i) else [],
+    "near 52-week high": lambda p, st, i, held: _top(p, st, i, lambda s: p.at(s, i) / max(x for x in p.series[s][i - 251:i + 1] if x)),
+    "low volatility": lambda p, st, i, held: _top(p, st, i, lambda s: _vol(p, s, i)),
+    "1-month losers": lambda p, st, i, held: _top(p, st, i, lambda s: -p.ret(s, i, 21) if p.ret(s, i, 21) is not None else None),
+    "Nifty ETF with 200-day filter": lambda p, st, i, held: [ETF] if _uptrend(p, i) else [],
 }
 
 
-def simulate(p: Prices, ends: list, stocks: list, rule) -> list:
+def simulate(p: Prices, ends: list, stocks, rule, stats: dict = None) -> list:
     """Monthly portfolio values, after real charges on every change."""
+    stats = {} if stats is None else stats
     cash, slots, values = CAPITAL, {}, []
+    stats["changes"] = 0
     for k, i in enumerate(ends):
         if k:
             prev = ends[k - 1]
@@ -117,8 +137,9 @@ def simulate(p: Prices, ends: list, stocks: list, rule) -> list:
             values.append(cash + sum(slots.values()))
         if k == len(ends) - 1:
             break
-        picks = rule(p, stocks(i), i)
+        picks = rule(p, stocks(i), i, list(slots))
         for s in [x for x in slots if x not in picks]:
+            stats["changes"] += 1
             cash += max(0.0, slots[s] - sell_cost(slots[s]))
             del slots[s]
         new = [s for s in picks if s not in slots]
@@ -158,7 +179,7 @@ def _drawdown(v: list) -> float:
 
 def run(closes: dict, traded: dict = None) -> dict:
     p = Prices(closes)
-    names = [s for s in closes if s not in (ETF, INDEX)]
+    names = bhav.stocks_only(s for s in closes if s not in (ETF, INDEX))
     ends = [i for i in p.month_ends() if i > 260 and p.at(ETF, i)]
     members = by_turnover(p, traded, names) if traded else None
     stocks = (lambda i: members[i]) if members else (lambda i: names)
@@ -170,14 +191,15 @@ def run(closes: dict, traded: dict = None) -> dict:
     rows = [{"name": "Equal-weight hold of the same stocks (no charges)", "cagr": _cagr(ew), "dd": _drawdown(ew), "final": ew[-1]},
             {"name": "Nifty ETF, buy and hold", "cagr": _cagr(etf), "dd": _drawdown(etf), "final": etf[-1]}]
     for name, rule in STRATEGIES.items():
-        v = simulate(p, ends, stocks, rule)
+        stats = {}
+        v = simulate(p, ends, stocks, rule, stats)
         r = _monthly(v)
         ex = [a - b for a, b in zip(r, r_ew)]
         ex_etf = [a - b for a, b in zip(r, r_etf)]
         early, late = statistics.mean(ex[:half]) * 12 * 100, statistics.mean(ex[half:]) * 12 * 100
         low = (statistics.mean(ex) - z * statistics.stdev(ex) / len(ex) ** 0.5) * 12 * 100
         beats_etf = statistics.mean(ex_etf[:half]) > 0 and statistics.mean(ex_etf[half:]) > 0
-        rows.append({"name": name, "cagr": _cagr(v), "dd": _drawdown(v), "final": v[-1], "early": early, "late": late, "low": low,
+        rows.append({"name": name, "cagr": _cagr(v), "dd": _drawdown(v), "final": v[-1], "sales": stats["changes"], "early": early, "late": late, "low": low,
                      "passed": early > 0 and late > 0 and low > 0 and beats_etf})
     return {"first": str(p.days[ends[0]]), "last": str(p.days[ends[-1]]), "months": len(ew), "stocks": len(names), "dynamic": bool(members), "rows": rows}
 
@@ -189,13 +211,13 @@ def to_markdown(rep: dict) -> str:
              "each month's 200 most-traded stocks from %d of today's Nifty 500" % rep["stocks"] if rep.get("dynamic")
              else "%d of today's Nifty 200 stocks" % rep["stocks"]),
          "", "**Passed: %s**" % (", ".join(r["name"] for r in rep["rows"] if r.get("passed")) or "none"), "",
-         "| strategy | a year | worst fall | ₹50,000 became | vs equal-weight, early half | late half | lower bound | pass |",
-         "|---|---|---|---|---|---|---|---|"]
+         "| strategy | a year | worst fall | ₹50,000 became | stocks sold | vs equal-weight, early half | late half | lower bound | pass |",
+         "|---|---|---|---|---|---|---|---|---|"]
     for r in rep["rows"]:
         if "early" in r:
-            L.append("| %s | %+.1f%% | %.0f%% | ₹%.0f | %+.1f%% | %+.1f%% | %+.1f%% | %s |" % (
-                r["name"], r["cagr"], r["dd"], r["final"], r["early"], r["late"], r["low"], "yes" if r["passed"] else "no"))
+            L.append("| %s | %+.1f%% | %.0f%% | ₹%.0f | %d | %+.1f%% | %+.1f%% | %+.1f%% | %s |" % (
+                r["name"], r["cagr"], r["dd"], r["final"], r["sales"], r["early"], r["late"], r["low"], "yes" if r["passed"] else "no"))
         else:
-            L.append("| %s | %+.1f%% | %.0f%% | ₹%.0f | | | | benchmark |" % (r["name"], r["cagr"], r["dd"], r["final"]))
+            L.append("| %s | %+.1f%% | %.0f%% | ₹%.0f | | | | | benchmark |" % (r["name"], r["cagr"], r["dd"], r["final"]))
     L += ["", "Companies that failed are missing from the data, so real results would be lower. Tax is not included.", ""]
     return "\n".join(L)
