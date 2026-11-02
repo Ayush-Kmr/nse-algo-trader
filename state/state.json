@@ -1,0 +1,342 @@
+{
+ "version": 1,
+ "date": "2026-11-02",
+ "equity": 49869.91,
+ "positions": {},
+ "today": {
+  "trades": [
+   {
+    "symbol": "HCLTECH",
+    "strategy": "orb",
+    "qty": 12,
+    "entry_price": 1454.2,
+    "exit_price": 1437.25,
+    "entry_ts": "2026-11-02T09:45:00+05:30",
+    "exit_ts": "2026-11-02T12:35:00+05:30",
+    "exit_reason": "stop",
+    "gross_pnl": -203.4,
+    "charges": 47.08,
+    "net_pnl": -250.48,
+    "planned_risk": 249.7,
+    "r_multiple": -1.003
+   },
+   {
+    "symbol": "TATASTEEL",
+    "strategy": "orb",
+    "qty": 91,
+    "entry_price": 174.75,
+    "exit_price": 176.55,
+    "entry_ts": "2026-11-02T09:45:00+05:30",
+    "exit_ts": "2026-11-02T15:17:15.106708+05:30",
+    "exit_reason": "square-off",
+    "gross_pnl": 163.8,
+    "charges": 43.41,
+    "net_pnl": 120.39,
+    "planned_risk": 248.36,
+    "r_multiple": 0.485
+   }
+  ],
+  "realised": -130.09,
+  "entries": 2,
+  "symbols": [
+   "TATASTEEL",
+   "HCLTECH"
+  ],
+  "seen": [
+   "TCS|orb",
+   "HCLTECH|orb",
+   "TATASTEEL|orb",
+   "ULTRACEMCO|orb",
+   "BAJFINANCE|vwap_reclaim",
+   "JSWSTEEL|orb",
+   "SBIN|orb",
+   "ITC|vwap_reclaim",
+   "KOTAKBANK|orb",
+   "ULTRACEMCO|vwap_reclaim",
+   "LT|vwap_reclaim",
+   "BHARTIARTL|vwap_reclaim",
+   "SUNPHARMA|vwap_reclaim"
+  ],
+  "events": [
+   {
+    "time": "09:32",
+    "kind": "START",
+    "symbol": "*",
+    "msg": "engine live, equity 50000.00"
+   },
+   {
+    "time": "09:47",
+    "kind": "BLOCK",
+    "symbol": "TCS",
+    "msg": "orb: net reward:risk 1.50 below 1.50",
+    "data": {
+     "signal": {
+      "entry": 2538.5,
+      "stop": 2525.8,
+      "target": 2576.6,
+      "bar": "09:40"
+     },
+     "qty": 11,
+     "position_value": 27940.25,
+     "loss_at_stop": 230.18,
+     "charges_at_stop": 57.06,
+     "net_reward_at_target": 345.12,
+     "net_rr": 1.5,
+     "cost_to_risk_pct": 22.8,
+     "limited_by": "position cap / cash"
+    }
+   },
+   {
+    "time": "09:52",
+    "kind": "ENTRY",
+    "symbol": "TATASTEEL",
+    "msg": "orb: buy 91 @ 174.75, stop 172.55, target 180.75, risk 248.36, RS +1.97% (closed 174.58 above range 170.66-174.54 (2.27% wide))",
+    "data": {
+     "signal": {
+      "entry": 174.6,
+      "stop": 172.55,
+      "target": 180.75,
+      "bar": "09:45"
+     },
+     "fill": 174.75,
+     "entry_ts": "2026-11-02T09:45:00+05:30",
+     "qty": 91,
+     "position_value": 15898.13,
+     "loss_at_stop": 248.36,
+     "charges_at_stop": 42.86,
+     "net_reward_at_target": 506.15,
+     "net_rr": 2.04,
+     "cost_to_risk_pct": 17.1,
+     "limited_by": "max loss per trade (after costs)"
+    }
+   },
+   {
+    "time": "09:52",
+    "kind": "ENTRY",
+    "symbol": "HCLTECH",
+    "msg": "orb: buy 12 @ 1454.20, stop 1438.15, target 1498.75, risk 249.70, RS +0.60% (closed 1453.30 above range 1431.00-1445.30 (1.00% wide))",
+    "data": {
+     "signal": {
+      "entry": 1453.3,
+      "stop": 1438.15,
+      "target": 1498.75,
+      "bar": "09:45"
+     },
+     "fill": 1454.2,
+     "entry_ts": "2026-11-02T09:45:00+05:30",
+     "qty": 12,
+     "position_value": 17450.06,
+     "loss_at_stop": 249.7,
+     "charges_at_stop": 47.08,
+     "net_reward_at_target": 486.78,
+     "net_rr": 1.95,
+     "cost_to_risk_pct": 18.8,
+     "limited_by": "max loss per trade (after costs)"
+    }
+   },
+   {
+    "time": "09:57",
+    "kind": "BLOCK",
+    "symbol": "ULTRACEMCO",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 11211.0,
+      "stop": 11160.5,
+      "target": 11362.5,
+      "bar": "09:50"
+     }
+    }
+   },
+   {
+    "time": "10:07",
+    "kind": "BLOCK",
+    "symbol": "BAJFINANCE",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 945.4,
+      "stop": 940.7,
+      "target": 959.5,
+      "bar": "10:00"
+     }
+    }
+   },
+   {
+    "time": "10:17",
+    "kind": "BLOCK",
+    "symbol": "JSWSTEEL",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 1261.6,
+      "stop": 1255.45,
+      "target": 1280.05,
+      "bar": "10:10"
+     }
+    }
+   },
+   {
+    "time": "10:27",
+    "kind": "BLOCK",
+    "symbol": "SBIN",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 978.8,
+      "stop": 973.6,
+      "target": 994.4,
+      "bar": "10:20"
+     }
+    }
+   },
+   {
+    "time": "10:37",
+    "kind": "BLOCK",
+    "symbol": "ITC",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 267.7,
+      "stop": 266.95,
+      "target": 269.95,
+      "bar": "10:30"
+     }
+    }
+   },
+   {
+    "time": "10:37",
+    "kind": "BLOCK",
+    "symbol": "KOTAKBANK",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 464.4,
+      "stop": 462.75,
+      "target": 469.35,
+      "bar": "10:30"
+     }
+    }
+   },
+   {
+    "time": "11:32",
+    "kind": "BLOCK",
+    "symbol": "ULTRACEMCO",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 11260.0,
+      "stop": 11230.0,
+      "target": 11350.0,
+      "bar": "11:25"
+     }
+    }
+   },
+   {
+    "time": "11:57",
+    "kind": "BLOCK",
+    "symbol": "LT",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 3926.0,
+      "stop": 3915.5,
+      "target": 3957.5,
+      "bar": "11:50"
+     }
+    }
+   },
+   {
+    "time": "12:02",
+    "kind": "BLOCK",
+    "symbol": "BHARTIARTL",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 1990.7,
+      "stop": 1984.8,
+      "target": 2008.4,
+      "bar": "11:55"
+     }
+    }
+   },
+   {
+    "time": "12:35",
+    "kind": "EXIT",
+    "symbol": "HCLTECH",
+    "msg": "stop 12 @ 1437.25, net -250.48 (-1.00R, charges 47.08)",
+    "data": {
+     "trade": {
+      "symbol": "HCLTECH",
+      "strategy": "orb",
+      "qty": 12,
+      "entry_price": 1454.2,
+      "exit_price": 1437.25,
+      "entry_ts": "2026-11-02T09:45:00+05:30",
+      "exit_ts": "2026-11-02T12:35:00+05:30",
+      "exit_reason": "stop",
+      "gross_pnl": -203.4,
+      "charges": 47.08,
+      "net_pnl": -250.48,
+      "planned_risk": 249.7,
+      "r_multiple": -1.003
+     },
+     "stop": 1438.15,
+     "target": 1498.75
+    }
+   },
+   {
+    "time": "13:12",
+    "kind": "INFO",
+    "symbol": "^NSEI",
+    "msg": "index below its open: longs paused"
+   },
+   {
+    "time": "13:57",
+    "kind": "BLOCK",
+    "symbol": "SUNPHARMA",
+    "msg": "vwap_reclaim: daily loss limit: no room left (lost 250.48, open risk 248.36, limit 497.50)",
+    "data": {
+     "signal": {
+      "entry": 1757.0,
+      "stop": 1746.4,
+      "target": 1788.8,
+      "bar": "13:50"
+     }
+    }
+   },
+   {
+    "time": "15:17",
+    "kind": "EXIT",
+    "symbol": "TATASTEEL",
+    "msg": "square-off 91 @ 176.55, net +120.39 (+0.48R, charges 43.41)",
+    "data": {
+     "trade": {
+      "symbol": "TATASTEEL",
+      "strategy": "orb",
+      "qty": 91,
+      "entry_price": 174.75,
+      "exit_price": 176.55,
+      "entry_ts": "2026-11-02T09:45:00+05:30",
+      "exit_ts": "2026-11-02T15:17:15.106708+05:30",
+      "exit_reason": "square-off",
+      "gross_pnl": 163.8,
+      "charges": 43.41,
+      "net_pnl": 120.39,
+      "planned_risk": 248.36,
+      "r_multiple": 0.485
+     },
+     "stop": 172.55,
+     "target": 180.75
+    }
+   }
+  ],
+  "flags": [
+   "start",
+   "regime-red:13"
+  ],
+  "ticks": 70,
+  "last_tick": "2026-11-02T15:27:15.981183+05:30"
+ },
+ "history": {}
+}

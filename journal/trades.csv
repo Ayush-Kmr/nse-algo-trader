@@ -1,0 +1,3 @@
+date,symbol,strategy,qty,entry_price,exit_price,entry_ts,exit_ts,exit_reason,gross_pnl,charges,net_pnl,planned_risk,r_multiple
+2026-11-02,HCLTECH,orb,12,1454.2,1437.25,2026-11-02T09:45:00+05:30,2026-11-02T12:35:00+05:30,stop,-203.4,47.08,-250.48,249.7,-1.003
+2026-11-02,TATASTEEL,orb,91,174.75,176.55,2026-11-02T09:45:00+05:30,2026-11-02T15:17:15.106708+05:30,square-off,163.8,43.41,120.39,248.36,0.485
