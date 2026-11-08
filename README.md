@@ -118,6 +118,8 @@ python3 -m algo eod
 
 Python 3.9+, standard library only. Nothing to install.
 
+Claude Code skills for analysis and audits live in `.claude/skills/` (index: [.claude/skills/README.md](.claude/skills/README.md)); the rules for using them are in [CLAUDE.md](CLAUDE.md).
+
 ## Current honest status
 
 See `reports/backtest-latest.md`. The first run (2026-10-29, 59 sessions, 25 Nifty names) **lost money
