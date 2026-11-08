@@ -1,0 +1,39 @@
+name: telegram-post
+
+# Run by hand to post free text (e.g. a market analysis) to the Telegram channel.
+# Separate messages with a line containing only ===  (Telegram caps one message at 4096 chars).
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Text to post; split messages with a line of ==="
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MESSAGE: ${{ inputs.message }}
+        run: |
+          python - <<'EOF'
+          import os, re, sys
+          from algo import notify
+          parts = [p.strip() for p in re.split(r"(?m)^===\s*$", os.environ["MESSAGE"]) if p.strip()]
+          failed = 0
+          for i, p in enumerate(parts, 1):
+              ok, why = notify.send(p)
+              print("part %d/%d: %s" % (i, len(parts), why))
+              failed += not ok
+          sys.exit(1 if failed else 0)
+          EOF
