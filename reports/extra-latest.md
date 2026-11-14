@@ -6,31 +6,31 @@
 
 | test | side | trades | gross ₹/trade | early net ₹ | late net ₹ | late lower bound | pass |
 |---|---|---|---|---|---|---|---|
-| 5-minute range breakout | long | 7415 | -6.90 | -102.72 | +5.13 | -11.82 | no |
-| 5-minute range breakdown | short | 8391 | -20.82 | -58.75 | -121.31 | -137.23 | no |
-| 15-minute range breakout | long | 6719 | -5.33 | -96.98 | -2.68 | -19.39 | no |
-| 15-minute range breakdown | short | 7421 | -13.00 | -60.81 | -91.43 | -108.52 | no |
+| 5-minute range breakout | long | 7512 | -9.00 | -99.51 | -4.77 | -22.18 | no |
+| 5-minute range breakdown | short | 8282 | -19.38 | -61.08 | -109.71 | -125.30 | no |
+| 15-minute range breakout | long | 6828 | -9.55 | -95.65 | -14.49 | -31.74 | no |
+| 15-minute range breakdown | short | 7333 | -11.05 | -57.92 | -90.07 | -106.42 | no |
 
 ## Groww guide rules, 5-minute bars
 
 | test | side | trades | gross ₹/trade | early net ₹ | late net ₹ | late lower bound | pass |
 |---|---|---|---|---|---|---|---|
-| RSI divergence, buy | long | 2612 | -38.60 | -115.02 | -44.65 | -65.21 | no |
-| RSI divergence, sell | short | 2050 | -62.61 | -93.17 | -159.28 | -178.70 | no |
-| MACD divergence, buy | long | 3370 | -36.33 | -114.15 | -41.25 | -59.49 | no |
-| MACD divergence, sell | short | 2605 | -53.02 | -86.09 | -139.74 | -158.30 | no |
-| 3% gap up, range break | long | 22 | +0.00 | +0.00 | +0.00 | +0.00 | no |
-| 3% gap down, range break | short | 22 | +0.00 | +0.00 | +0.00 | +0.00 | no |
+| RSI divergence, buy | long | 2720 | -38.68 | -112.51 | -56.02 | -74.59 | no |
+| RSI divergence, sell | short | 1979 | -56.44 | -85.82 | -155.52 | -176.16 | no |
+| MACD divergence, buy | long | 3429 | -33.77 | -111.79 | -43.08 | -60.08 | no |
+| MACD divergence, sell | short | 2583 | -51.52 | -85.28 | -140.55 | -160.45 | no |
+| 3% gap up, range break | long | 25 | +0.00 | +0.00 | +0.00 | +0.00 | no |
+| 3% gap down, range break | short | 20 | +0.00 | +0.00 | +0.00 | +0.00 | no |
 
 ## News proxy: big gaps on heavy volume
 
 | test | side | trades | gross ₹/trade | early net ₹ | late net ₹ | late lower bound | pass |
 |---|---|---|---|---|---|---|---|
-| follow the gap | both | 929 | -28.75 | -73.54 | -107.77 | -155.85 | no |
-| fade the gap | both | 929 | -15.85 | -63.18 | -89.70 | -134.85 | no |
+| follow the gap | both | 936 | -29.29 | -75.39 | -106.49 | -155.50 | no |
+| fade the gap | both | 936 | -14.90 | -63.90 | -85.95 | -132.13 | no |
 
 ## Pairs trading
 
 | test | side | trades | gross ₹/trade | early net ₹ | late net ₹ | late lower bound | pass |
 |---|---|---|---|---|---|---|---|
-| same-industry pairs | both | 2194 | -25.60 | -85.27 | -100.31 | -107.31 | no |
+| same-industry pairs | both | 2261 | -28.05 | -88.75 | -102.00 | -109.10 | no |

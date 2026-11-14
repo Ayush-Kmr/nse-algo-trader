@@ -1,123 +1,108 @@
 {
  "report": {
   "days": 60,
-  "first_day": "2026-08-12",
-  "last_day": "2026-11-06",
-  "oos_from": "2026-10-13",
+  "first_day": "2026-08-18",
+  "last_day": "2026-11-13",
+  "oos_from": "2026-10-19",
   "all": {
-   "trades": 74,
-   "win_rate_pct": 36.5,
-   "net_total": -4576.21,
-   "gross_total": -808.65,
-   "charges_total": 3767.56,
-   "expectancy_rs": -61.84,
-   "avg_r_net": -0.277,
-   "avg_r_se": 0.0857,
-   "profit_factor": 0.41,
-   "max_drawdown_rs": 5281.88,
+   "trades": 79,
+   "win_rate_pct": 34.2,
+   "net_total": -5317.45,
+   "gross_total": -1292.65,
+   "charges_total": 4024.8,
+   "expectancy_rs": -67.31,
+   "avg_r_net": -0.296,
+   "avg_r_se": 0.0815,
+   "profit_factor": 0.38,
+   "max_drawdown_rs": 5708.08,
    "exits": {
-    "square-off": 43,
-    "stop": 29,
+    "square-off": 46,
+    "stop": 31,
     "target": 2
    }
   },
   "in_sample": {
-   "trades": 41,
-   "win_rate_pct": 26.8,
-   "net_total": -4459.4,
-   "gross_total": -2346.2,
-   "charges_total": 2113.2,
-   "expectancy_rs": -108.77,
-   "avg_r_net": -0.488,
-   "avg_r_se": 0.1019,
-   "profit_factor": 0.19,
-   "max_drawdown_rs": 4717.22,
+   "trades": 50,
+   "win_rate_pct": 30.0,
+   "net_total": -4467.24,
+   "gross_total": -1890.75,
+   "charges_total": 2576.49,
+   "expectancy_rs": -89.34,
+   "avg_r_net": -0.39,
+   "avg_r_se": 0.0999,
+   "profit_factor": 0.28,
+   "max_drawdown_rs": 4857.87,
    "exits": {
-    "square-off": 20,
-    "stop": 21
+    "square-off": 26,
+    "stop": 23,
+    "target": 1
    }
   },
   "out_of_sample": {
-   "trades": 33,
-   "win_rate_pct": 48.5,
-   "net_total": -116.81,
-   "gross_total": 1537.55,
-   "charges_total": 1654.36,
-   "expectancy_rs": -3.54,
-   "avg_r_net": -0.016,
-   "avg_r_se": 0.1328,
-   "profit_factor": 0.95,
-   "max_drawdown_rs": 1180.97,
+   "trades": 29,
+   "win_rate_pct": 41.4,
+   "net_total": -850.21,
+   "gross_total": 598.1,
+   "charges_total": 1448.31,
+   "expectancy_rs": -29.32,
+   "avg_r_net": -0.132,
+   "avg_r_se": 0.1372,
+   "profit_factor": 0.65,
+   "max_drawdown_rs": 1301.29,
    "exits": {
-    "target": 2,
-    "square-off": 23,
-    "stop": 8
+    "stop": 8,
+    "square-off": 20,
+    "target": 1
    }
   },
   "by_strategy": {
    "orb": {
-    "trades": 69,
-    "win_rate_pct": 37.7,
-    "net_total": -4129.3,
-    "gross_total": -607.0,
-    "charges_total": 3522.3,
-    "expectancy_rs": -59.84,
-    "avg_r_net": -0.262,
-    "avg_r_se": 0.0901,
-    "profit_factor": 0.43,
-    "max_drawdown_rs": 4834.97,
+    "trades": 75,
+    "win_rate_pct": 34.7,
+    "net_total": -5023.57,
+    "gross_total": -1186.1,
+    "charges_total": 3837.47,
+    "expectancy_rs": -66.98,
+    "avg_r_net": -0.293,
+    "avg_r_se": 0.0849,
+    "profit_factor": 0.39,
+    "max_drawdown_rs": 5414.2,
     "exits": {
-     "square-off": 40,
-     "stop": 27,
+     "square-off": 43,
+     "stop": 30,
      "target": 2
     }
    },
    "vwap_reclaim": {
-    "trades": 5,
-    "win_rate_pct": 20.0,
-    "net_total": -446.91,
-    "gross_total": -201.65,
-    "charges_total": 245.26,
-    "expectancy_rs": -89.38,
-    "avg_r_net": -0.488,
-    "avg_r_se": 0.2669,
-    "profit_factor": 0.16,
-    "max_drawdown_rs": 450.01,
+    "trades": 4,
+    "win_rate_pct": 25.0,
+    "net_total": -293.88,
+    "gross_total": -106.55,
+    "charges_total": 187.33,
+    "expectancy_rs": -73.47,
+    "avg_r_net": -0.337,
+    "avg_r_se": 0.2855,
+    "profit_factor": 0.23,
+    "max_drawdown_rs": 299.69,
     "exits": {
-     "stop": 2,
+     "stop": 1,
      "square-off": 3
     }
    }
   },
   "blocks": {
-   "net reward:risk N below N": 226,
-   "max open positions (N) reached": 266,
-   "size is zero: stop too far for the risk budget": 193,
-   "position N below the minimum N": 104,
+   "net reward:risk N below N": 204,
+   "max open positions (N) reached": 286,
+   "size is zero: stop too far for the risk budget": 242,
+   "position N below the minimum N": 80,
    "net reward:risk -N below N": 21,
-   "charges are N% of the risk budget (max N%)": 125,
-   "size is zero: no cash or position cap left for one share": 26,
-   "daily loss limit: no room left (lost N, open risk N, limit N)": 11
+   "charges are N% of the risk budget (max N%)": 94,
+   "size is zero: no cash or position cap left for one share": 24,
+   "daily loss limit: no room left (lost N, open risk N, limit N)": 24
   },
-  "verdict": "FAILS the gate: out-of-sample expectancy is -3.54 per trade after costs."
+  "verdict": "INCONCLUSIVE: 29 out-of-sample trades, need 30+ before any conclusion."
  },
  "trades": [
-  {
-   "symbol": "M&M",
-   "strategy": "orb",
-   "qty": 8,
-   "entry_price": 3427.0,
-   "exit_price": 3418.1,
-   "entry_ts": "2026-08-14T13:45:00+05:30",
-   "exit_ts": "2026-08-14T15:15:00+05:30",
-   "exit_reason": "square-off",
-   "gross_pnl": -71.2,
-   "charges": 56.91,
-   "net_pnl": -128.11,
-   "planned_risk": 237.67,
-   "r_multiple": -0.539,
-   "date": "2026-08-14"
-  },
   {
    "symbol": "AXISBANK",
    "strategy": "orb",
@@ -215,19 +200,35 @@
    "date": "2026-09-01"
   },
   {
-   "symbol": "ITC",
+   "symbol": "TCS",
    "strategy": "orb",
-   "qty": 98,
-   "entry_price": 266.0,
-   "exit_price": 267.05,
-   "entry_ts": "2026-09-02T10:25:00+05:30",
+   "qty": 8,
+   "entry_price": 2345.45,
+   "exit_price": 2346.55,
+   "entry_ts": "2026-09-02T09:30:00+05:30",
    "exit_ts": "2026-09-02T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 102.9,
-   "charges": 56.48,
-   "net_pnl": 46.42,
-   "planned_risk": 249.25,
-   "r_multiple": 0.186,
+   "gross_pnl": 8.8,
+   "charges": 50.95,
+   "net_pnl": -42.15,
+   "planned_risk": 236.67,
+   "r_multiple": -0.178,
+   "date": "2026-09-02"
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "strategy": "orb",
+   "qty": 12,
+   "entry_price": 1656.7,
+   "exit_price": 1669.35,
+   "entry_ts": "2026-09-02T09:35:00+05:30",
+   "exit_ts": "2026-09-02T15:15:00+05:30",
+   "exit_reason": "square-off",
+   "gross_pnl": 151.8,
+   "charges": 54.16,
+   "net_pnl": 97.64,
+   "planned_risk": 243.63,
+   "r_multiple": 0.401,
    "date": "2026-09-02"
   },
   {
@@ -263,22 +264,6 @@
    "date": "2026-09-03"
   },
   {
-   "symbol": "TATASTEEL",
-   "strategy": "vwap_reclaim",
-   "qty": 155,
-   "entry_price": 184.45,
-   "exit_price": 183.85,
-   "entry_ts": "2026-09-04T10:50:00+05:30",
-   "exit_ts": "2026-09-04T11:05:00+05:30",
-   "exit_reason": "stop",
-   "gross_pnl": -93.0,
-   "charges": 57.32,
-   "net_pnl": -150.32,
-   "planned_risk": 138.07,
-   "r_multiple": -1.089,
-   "date": "2026-09-04"
-  },
-  {
    "symbol": "RELIANCE",
    "strategy": "orb",
    "qty": 16,
@@ -295,18 +280,34 @@
    "date": "2026-09-04"
   },
   {
+   "symbol": "AXISBANK",
+   "strategy": "orb",
+   "qty": 20,
+   "entry_price": 1275.1,
+   "exit_price": 1272.2,
+   "entry_ts": "2026-09-04T11:35:00+05:30",
+   "exit_ts": "2026-09-04T15:15:00+05:30",
+   "exit_reason": "square-off",
+   "gross_pnl": -58.0,
+   "charges": 56.23,
+   "net_pnl": -114.23,
+   "planned_risk": 244.68,
+   "r_multiple": -0.467,
+   "date": "2026-09-04"
+  },
+  {
    "symbol": "POWERGRID",
    "strategy": "orb",
-   "qty": 92,
+   "qty": 93,
    "entry_price": 268.1,
    "exit_price": 265.95,
    "entry_ts": "2026-09-09T09:35:00+05:30",
    "exit_ts": "2026-09-09T11:15:00+05:30",
    "exit_reason": "stop",
-   "gross_pnl": -197.8,
-   "charges": 55.89,
-   "net_pnl": -253.69,
-   "planned_risk": 246.38,
+   "gross_pnl": -199.95,
+   "charges": 55.99,
+   "net_pnl": -255.94,
+   "planned_risk": 248.54,
    "r_multiple": -1.03,
    "date": "2026-09-09"
   },
@@ -361,16 +362,16 @@
   {
    "symbol": "HCLTECH",
    "strategy": "orb",
-   "qty": 13,
+   "qty": 14,
    "entry_price": 1220.85,
    "exit_price": 1211.55,
    "entry_ts": "2026-09-11T11:35:00+05:30",
    "exit_ts": "2026-09-11T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": -120.9,
-   "charges": 42.91,
-   "net_pnl": -163.81,
-   "planned_risk": 227.5,
+   "gross_pnl": -130.2,
+   "charges": 46.21,
+   "net_pnl": -176.41,
+   "planned_risk": 245.0,
    "r_multiple": -0.72,
    "date": "2026-09-11"
   },
@@ -409,16 +410,16 @@
   {
    "symbol": "SBIN",
    "strategy": "orb",
-   "qty": 18,
+   "qty": 19,
    "entry_price": 1000.6,
    "exit_price": 990.5,
    "entry_ts": "2026-09-17T09:30:00+05:30",
    "exit_ts": "2026-09-17T10:45:00+05:30",
    "exit_reason": "stop",
-   "gross_pnl": -181.8,
-   "charges": 48.63,
-   "net_pnl": -230.43,
-   "planned_risk": 230.33,
+   "gross_pnl": -191.9,
+   "charges": 51.33,
+   "net_pnl": -243.23,
+   "planned_risk": 243.13,
    "r_multiple": -1.0,
    "date": "2026-09-17"
   },
@@ -489,17 +490,17 @@
   {
    "symbol": "JSWSTEEL",
    "strategy": "orb",
-   "qty": 16,
+   "qty": 17,
    "entry_price": 1287.4,
    "exit_price": 1294.2,
    "entry_ts": "2026-09-23T09:30:00+05:30",
    "exit_ts": "2026-09-23T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 108.8,
-   "charges": 54.54,
-   "net_pnl": 54.26,
-   "planned_risk": 228.67,
-   "r_multiple": 0.237,
+   "gross_pnl": 115.6,
+   "charges": 55.0,
+   "net_pnl": 60.6,
+   "planned_risk": 240.01,
+   "r_multiple": 0.252,
    "date": "2026-09-23"
   },
   {
@@ -569,16 +570,16 @@
   {
    "symbol": "TATASTEEL",
    "strategy": "orb",
-   "qty": 103,
+   "qty": 104,
    "entry_price": 190.2,
    "exit_price": 188.35,
    "entry_ts": "2026-09-25T09:30:00+05:30",
    "exit_ts": "2026-09-25T12:00:00+05:30",
    "exit_reason": "stop",
-   "gross_pnl": -190.55,
-   "charges": 52.91,
-   "net_pnl": -243.46,
-   "planned_risk": 235.95,
+   "gross_pnl": -192.4,
+   "charges": 53.42,
+   "net_pnl": -245.82,
+   "planned_risk": 238.24,
    "r_multiple": -1.032,
    "date": "2026-09-25"
   },
@@ -729,16 +730,16 @@
   {
    "symbol": "TATASTEEL",
    "strategy": "orb",
-   "qty": 93,
+   "qty": 94,
    "entry_price": 173.15,
    "exit_price": 173.35,
    "entry_ts": "2026-10-09T09:30:00+05:30",
    "exit_ts": "2026-10-09T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 18.6,
-   "charges": 43.74,
-   "net_pnl": -25.14,
-   "planned_risk": 225.4,
+   "gross_pnl": 18.8,
+   "charges": 44.21,
+   "net_pnl": -25.41,
+   "planned_risk": 227.82,
    "r_multiple": -0.112,
    "date": "2026-10-09"
   },
@@ -793,48 +794,48 @@
   {
    "symbol": "TATASTEEL",
    "strategy": "orb",
-   "qty": 133,
+   "qty": 134,
    "entry_price": 173.8,
    "exit_price": 174.35,
    "entry_ts": "2026-10-13T12:15:00+05:30",
    "exit_ts": "2026-10-13T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 73.15,
-   "charges": 55.42,
-   "net_pnl": 17.73,
-   "planned_risk": 215.98,
-   "r_multiple": 0.082,
+   "gross_pnl": 73.7,
+   "charges": 55.48,
+   "net_pnl": 18.22,
+   "planned_risk": 217.25,
+   "r_multiple": 0.084,
    "date": "2026-10-13"
   },
   {
    "symbol": "NTPC",
    "strategy": "vwap_reclaim",
-   "qty": 87,
+   "qty": 88,
    "entry_price": 312.75,
    "exit_price": 314.4,
    "entry_ts": "2026-10-14T10:40:00+05:30",
    "exit_ts": "2026-10-14T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 143.55,
-   "charges": 56.9,
-   "net_pnl": 86.65,
-   "planned_risk": 228.55,
-   "r_multiple": 0.379,
+   "gross_pnl": 145.2,
+   "charges": 57.01,
+   "net_pnl": 88.19,
+   "planned_risk": 230.63,
+   "r_multiple": 0.382,
    "date": "2026-10-14"
   },
   {
    "symbol": "ITC",
    "strategy": "vwap_reclaim",
-   "qty": 72,
+   "qty": 71,
    "entry_price": 261.9,
    "exit_price": 261.45,
    "entry_ts": "2026-10-14T10:55:00+05:30",
    "exit_ts": "2026-10-14T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": -32.4,
-   "charges": 51.15,
-   "net_pnl": -83.55,
-   "planned_risk": 195.91,
+   "gross_pnl": -31.95,
+   "charges": 50.43,
+   "net_pnl": -82.38,
+   "planned_risk": 193.18,
    "r_multiple": -0.426,
    "date": "2026-10-14"
   },
@@ -871,35 +872,35 @@
    "date": "2026-10-15"
   },
   {
-   "symbol": "HDFCBANK",
+   "symbol": "KOTAKBANK",
    "strategy": "orb",
-   "qty": 37,
-   "entry_price": 733.15,
-   "exit_price": 728.8,
-   "entry_ts": "2026-10-16T10:05:00+05:30",
-   "exit_ts": "2026-10-16T11:20:00+05:30",
+   "qty": 49,
+   "entry_price": 449.85,
+   "exit_price": 446.25,
+   "entry_ts": "2026-10-16T10:00:00+05:30",
+   "exit_ts": "2026-10-16T11:10:00+05:30",
    "exit_reason": "stop",
-   "gross_pnl": -160.95,
-   "charges": 56.78,
-   "net_pnl": -217.73,
-   "planned_risk": 216.89,
-   "r_multiple": -1.004,
+   "gross_pnl": -176.4,
+   "charges": 54.97,
+   "net_pnl": -231.37,
+   "planned_risk": 228.32,
+   "r_multiple": -1.013,
    "date": "2026-10-16"
   },
   {
-   "symbol": "TATASTEEL",
+   "symbol": "HDFCBANK",
    "strategy": "orb",
-   "qty": 85,
-   "entry_price": 178.2,
-   "exit_price": 175.9,
-   "entry_ts": "2026-10-16T10:05:00+05:30",
-   "exit_ts": "2026-10-16T11:45:00+05:30",
+   "qty": 32,
+   "entry_price": 734.15,
+   "exit_price": 728.8,
+   "entry_ts": "2026-10-16T10:00:00+05:30",
+   "exit_ts": "2026-10-16T11:20:00+05:30",
    "exit_reason": "stop",
-   "gross_pnl": -195.5,
-   "charges": 40.83,
-   "net_pnl": -236.33,
-   "planned_risk": 228.9,
-   "r_multiple": -1.032,
+   "gross_pnl": -171.2,
+   "charges": 55.49,
+   "net_pnl": -226.69,
+   "planned_risk": 225.98,
+   "r_multiple": -1.003,
    "date": "2026-10-16"
   },
   {
@@ -1001,16 +1002,16 @@
   {
    "symbol": "TATASTEEL",
    "strategy": "orb",
-   "qty": 110,
+   "qty": 111,
    "entry_price": 170.5,
    "exit_price": 170.75,
    "entry_ts": "2026-10-27T09:40:00+05:30",
    "exit_ts": "2026-10-27T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 27.5,
-   "charges": 50.96,
-   "net_pnl": -23.46,
-   "planned_risk": 205.09,
+   "gross_pnl": 27.75,
+   "charges": 51.42,
+   "net_pnl": -23.67,
+   "planned_risk": 206.95,
    "r_multiple": -0.114,
    "date": "2026-10-27"
   },
@@ -1097,16 +1098,16 @@
   {
    "symbol": "WIPRO",
    "strategy": "orb",
-   "qty": 94,
+   "qty": 95,
    "entry_price": 194.1,
    "exit_price": 197.15,
    "entry_ts": "2026-10-30T09:30:00+05:30",
    "exit_ts": "2026-10-30T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 286.7,
-   "charges": 49.95,
-   "net_pnl": 236.75,
-   "planned_risk": 226.14,
+   "gross_pnl": 289.75,
+   "charges": 50.48,
+   "net_pnl": 239.27,
+   "planned_risk": 228.56,
    "r_multiple": 1.047,
    "date": "2026-10-30"
   },
@@ -1129,32 +1130,32 @@
   {
    "symbol": "HCLTECH",
    "strategy": "orb",
-   "qty": 10,
+   "qty": 11,
    "entry_price": 1454.2,
    "exit_price": 1437.25,
    "entry_ts": "2026-11-02T09:45:00+05:30",
    "exit_ts": "2026-11-02T12:35:00+05:30",
    "exit_reason": "stop",
-   "gross_pnl": -169.5,
-   "charges": 39.23,
-   "net_pnl": -208.73,
-   "planned_risk": 208.08,
+   "gross_pnl": -186.45,
+   "charges": 43.15,
+   "net_pnl": -229.6,
+   "planned_risk": 228.88,
    "r_multiple": -1.003,
    "date": "2026-11-02"
   },
   {
    "symbol": "TATASTEEL",
    "strategy": "orb",
-   "qty": 83,
+   "qty": 84,
    "entry_price": 174.75,
    "exit_price": 176.55,
    "entry_ts": "2026-11-02T09:45:00+05:30",
    "exit_ts": "2026-11-02T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 149.4,
-   "charges": 39.6,
-   "net_pnl": 109.8,
-   "planned_risk": 226.53,
+   "gross_pnl": 151.2,
+   "charges": 40.07,
+   "net_pnl": 111.13,
+   "planned_risk": 229.26,
    "r_multiple": 0.485,
    "date": "2026-11-02"
   },
@@ -1193,32 +1194,32 @@
   {
    "symbol": "JSWSTEEL",
    "strategy": "orb",
-   "qty": 18,
+   "qty": 19,
    "entry_price": 1328.6,
    "exit_price": 1319.65,
    "entry_ts": "2026-11-04T09:35:00+05:30",
    "exit_ts": "2026-11-04T10:25:00+05:30",
    "exit_reason": "stop",
-   "gross_pnl": -161.1,
-   "charges": 55.64,
-   "net_pnl": -216.74,
-   "planned_risk": 216.54,
+   "gross_pnl": -170.05,
+   "charges": 56.11,
+   "net_pnl": -226.16,
+   "planned_risk": 225.95,
    "r_multiple": -1.001,
    "date": "2026-11-04"
   },
   {
    "symbol": "BAJFINANCE",
    "strategy": "orb",
-   "qty": 16,
+   "qty": 17,
    "entry_price": 981.6,
    "exit_price": 990.9,
    "entry_ts": "2026-11-04T09:40:00+05:30",
    "exit_ts": "2026-11-04T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 148.8,
-   "charges": 42.86,
-   "net_pnl": 105.94,
-   "planned_risk": 213.13,
+   "gross_pnl": 158.1,
+   "charges": 45.53,
+   "net_pnl": 112.57,
+   "planned_risk": 226.46,
    "r_multiple": 0.497,
    "date": "2026-11-04"
   },
@@ -1273,41 +1274,101 @@
   {
    "symbol": "ITC",
    "strategy": "orb",
-   "qty": 70,
+   "qty": 71,
    "entry_price": 279.55,
    "exit_price": 282.3,
    "entry_ts": "2026-11-06T09:40:00+05:30",
    "exit_ts": "2026-11-06T15:15:00+05:30",
    "exit_reason": "square-off",
-   "gross_pnl": 192.5,
-   "charges": 53.41,
-   "net_pnl": 139.09,
-   "planned_risk": 223.25,
+   "gross_pnl": 195.25,
+   "charges": 54.12,
+   "net_pnl": 141.13,
+   "planned_risk": 226.43,
    "r_multiple": 0.623,
    "date": "2026-11-06"
+  },
+  {
+   "symbol": "INFY",
+   "strategy": "orb",
+   "qty": 14,
+   "entry_price": 1170.15,
+   "exit_price": 1157.45,
+   "entry_ts": "2026-11-11T09:30:00+05:30",
+   "exit_ts": "2026-11-11T10:00:00+05:30",
+   "exit_reason": "stop",
+   "gross_pnl": -177.8,
+   "charges": 44.21,
+   "net_pnl": -222.01,
+   "planned_risk": 221.26,
+   "r_multiple": -1.003,
+   "date": "2026-11-11"
+  },
+  {
+   "symbol": "M&M",
+   "strategy": "orb",
+   "qty": 4,
+   "entry_price": 3429.1,
+   "exit_price": 3414.9,
+   "entry_ts": "2026-11-11T10:10:00+05:30",
+   "exit_ts": "2026-11-11T15:15:00+05:30",
+   "exit_reason": "square-off",
+   "gross_pnl": -56.8,
+   "charges": 37.15,
+   "net_pnl": -93.95,
+   "planned_risk": 223.71,
+   "r_multiple": -0.42,
+   "date": "2026-11-11"
+  },
+  {
+   "symbol": "HINDUNILVR",
+   "strategy": "orb",
+   "qty": 9,
+   "entry_price": 2009.25,
+   "exit_price": 1991.45,
+   "entry_ts": "2026-11-12T09:30:00+05:30",
+   "exit_ts": "2026-11-12T10:15:00+05:30",
+   "exit_reason": "stop",
+   "gross_pnl": -160.2,
+   "charges": 48.86,
+   "net_pnl": -209.06,
+   "planned_risk": 208.61,
+   "r_multiple": -1.002,
+   "date": "2026-11-12"
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "strategy": "orb",
+   "qty": 10,
+   "entry_price": 1934.1,
+   "exit_price": 1925.5,
+   "entry_ts": "2026-11-12T09:35:00+05:30",
+   "exit_ts": "2026-11-12T15:15:00+05:30",
+   "exit_reason": "square-off",
+   "gross_pnl": -86.0,
+   "charges": 52.38,
+   "net_pnl": -138.38,
+   "planned_risk": 216.87,
+   "r_multiple": -0.638,
+   "date": "2026-11-12"
+  },
+  {
+   "symbol": "TCS",
+   "strategy": "orb",
+   "qty": 9,
+   "entry_price": 2438.2,
+   "exit_price": 2421.15,
+   "entry_ts": "2026-11-13T09:45:00+05:30",
+   "exit_ts": "2026-11-13T11:35:00+05:30",
+   "exit_reason": "stop",
+   "gross_pnl": -153.45,
+   "charges": 54.94,
+   "net_pnl": -208.39,
+   "planned_risk": 207.63,
+   "r_multiple": -1.004,
+   "date": "2026-11-13"
   }
  ],
  "daily": [
-  {
-   "date": "2026-08-12",
-   "net": 0.0,
-   "trades": 0
-  },
-  {
-   "date": "2026-08-13",
-   "net": 0.0,
-   "trades": 0
-  },
-  {
-   "date": "2026-08-14",
-   "net": -128.11,
-   "trades": 1
-  },
-  {
-   "date": "2026-08-17",
-   "net": 0.0,
-   "trades": 0
-  },
   {
    "date": "2026-08-18",
    "net": 151.95,
@@ -1365,8 +1426,8 @@
   },
   {
    "date": "2026-09-02",
-   "net": 46.42,
-   "trades": 1
+   "net": 55.49,
+   "trades": 2
   },
   {
    "date": "2026-09-03",
@@ -1375,7 +1436,7 @@
   },
   {
    "date": "2026-09-04",
-   "net": -158.65,
+   "net": -122.56,
    "trades": 2
   },
   {
@@ -1390,7 +1451,7 @@
   },
   {
    "date": "2026-09-09",
-   "net": -502.95,
+   "net": -505.2,
    "trades": 2
   },
   {
@@ -1400,7 +1461,7 @@
   },
   {
    "date": "2026-09-11",
-   "net": -123.84,
+   "net": -136.44,
    "trades": 2
   },
   {
@@ -1415,7 +1476,7 @@
   },
   {
    "date": "2026-09-17",
-   "net": -466.39,
+   "net": -479.19,
    "trades": 2
   },
   {
@@ -1435,7 +1496,7 @@
   },
   {
    "date": "2026-09-23",
-   "net": 17.96,
+   "net": 24.3,
    "trades": 2
   },
   {
@@ -1445,7 +1506,7 @@
   },
   {
    "date": "2026-09-25",
-   "net": -466.34,
+   "net": -468.7,
    "trades": 2
   },
   {
@@ -1490,7 +1551,7 @@
   },
   {
    "date": "2026-10-09",
-   "net": -20.77,
+   "net": -21.04,
    "trades": 2
   },
   {
@@ -1500,12 +1561,12 @@
   },
   {
    "date": "2026-10-13",
-   "net": 525.29,
+   "net": 525.78,
    "trades": 3
   },
   {
    "date": "2026-10-14",
-   "net": 3.1,
+   "net": 5.81,
    "trades": 2
   },
   {
@@ -1515,7 +1576,7 @@
   },
   {
    "date": "2026-10-16",
-   "net": -454.06,
+   "net": -458.06,
    "trades": 2
   },
   {
@@ -1545,7 +1606,7 @@
   },
   {
    "date": "2026-10-27",
-   "net": -77.03,
+   "net": -77.24,
    "trades": 2
   },
   {
@@ -1560,12 +1621,12 @@
   },
   {
    "date": "2026-10-30",
-   "net": 142.46,
+   "net": 144.98,
    "trades": 2
   },
   {
    "date": "2026-11-02",
-   "net": -98.93,
+   "net": -118.47,
    "trades": 2
   },
   {
@@ -1575,7 +1636,7 @@
   },
   {
    "date": "2026-11-04",
-   "net": -110.8,
+   "net": -113.59,
    "trades": 2
   },
   {
@@ -1585,8 +1646,28 @@
   },
   {
    "date": "2026-11-06",
-   "net": 203.63,
+   "net": 205.67,
    "trades": 2
+  },
+  {
+   "date": "2026-11-09",
+   "net": 0.0,
+   "trades": 0
+  },
+  {
+   "date": "2026-11-11",
+   "net": -315.96,
+   "trades": 2
+  },
+  {
+   "date": "2026-11-12",
+   "net": -347.44,
+   "trades": 2
+  },
+  {
+   "date": "2026-11-13",
+   "net": -208.39,
+   "trades": 1
   }
  ]
 }
