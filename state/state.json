@@ -1,14 +1,61 @@
 {
  "version": 1,
- "date": "2026-11-18",
- "equity": 48424.83,
+ "date": "2026-11-19",
+ "equity": 48788.32,
  "positions": {},
  "today": {
-  "trades": [],
-  "realised": 0.0,
-  "entries": 0,
-  "symbols": [],
-  "seen": [],
+  "trades": [
+   {
+    "symbol": "HINDUNILVR",
+    "strategy": "orb",
+    "qty": 7,
+    "entry_price": 2033.35,
+    "exit_price": 2068.85,
+    "entry_ts": "2026-11-19T09:40:00+05:30",
+    "exit_ts": "2026-11-19T15:17:26.978785+05:30",
+    "exit_reason": "square-off",
+    "gross_pnl": 248.5,
+    "charges": 39.01,
+    "net_pnl": 209.49,
+    "planned_risk": 238.01,
+    "r_multiple": 0.88
+   },
+   {
+    "symbol": "TATASTEEL",
+    "strategy": "orb",
+    "qty": 123,
+    "entry_price": 179.55,
+    "exit_price": 181.25,
+    "entry_ts": "2026-11-19T09:40:00+05:30",
+    "exit_ts": "2026-11-19T15:17:26.978785+05:30",
+    "exit_reason": "square-off",
+    "gross_pnl": 209.1,
+    "charges": 55.1,
+    "net_pnl": 154.0,
+    "planned_risk": 241.26,
+    "r_multiple": 0.638
+   }
+  ],
+  "realised": 363.49,
+  "entries": 2,
+  "symbols": [
+   "HINDUNILVR",
+   "TATASTEEL"
+  ],
+  "seen": [
+   "HINDUNILVR|orb",
+   "TATASTEEL|orb",
+   "ULTRACEMCO|orb",
+   "BAJFINANCE|orb",
+   "SBIN|vwap_reclaim",
+   "ADANIPORTS|orb",
+   "LT|orb",
+   "ITC|vwap_reclaim",
+   "ITC|orb",
+   "NTPC|vwap_reclaim",
+   "SBIN|orb",
+   "ICICIBANK|orb"
+  ],
   "events": [
    {
     "time": "09:32",
@@ -23,47 +70,250 @@
     "msg": "index below its open: longs paused"
    },
    {
+    "time": "09:47",
+    "kind": "ENTRY",
+    "symbol": "HINDUNILVR",
+    "msg": "orb: buy 7 @ 2033.35, stop 2006.00, target 2110.40, risk 238.01, RS +1.96% (closed 2032.10 above range 1990.00-2022.00 (1.61% wide))",
+    "data": {
+     "signal": {
+      "entry": 2032.1,
+      "stop": 2006.0,
+      "target": 2110.4,
+      "bar": "09:40"
+     },
+     "fill": 2033.35,
+     "entry_ts": "2026-11-19T09:40:00+05:30",
+     "qty": 7,
+     "position_value": 14233.23,
+     "loss_at_stop": 238.01,
+     "charges_at_stop": 38.35,
+     "net_reward_at_target": 500.14,
+     "net_rr": 2.1,
+     "cost_to_risk_pct": 15.8,
+     "limited_by": "max loss per trade (after costs)"
+    }
+   },
+   {
+    "time": "09:47",
+    "kind": "ENTRY",
+    "symbol": "TATASTEEL",
+    "msg": "orb: buy 123 @ 179.55, stop 178.10, target 183.70, risk 241.26, RS +0.64% (closed 179.51 above range 177.34-178.90 (0.88% wide))",
+    "data": {
+     "signal": {
+      "entry": 179.4,
+      "stop": 178.1,
+      "target": 183.7,
+      "bar": "09:40"
+     },
+     "fill": 179.55,
+     "entry_ts": "2026-11-19T09:40:00+05:30",
+     "qty": 123,
+     "position_value": 22079.44,
+     "loss_at_stop": 241.26,
+     "charges_at_stop": 54.98,
+     "net_reward_at_target": 460.48,
+     "net_rr": 1.91,
+     "cost_to_risk_pct": 22.7,
+     "limited_by": "max loss per trade (after costs)"
+    }
+   },
+   {
+    "time": "09:52",
+    "kind": "BLOCK",
+    "symbol": "ULTRACEMCO",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 12450.0,
+      "stop": 12388.5,
+      "target": 12634.5,
+      "bar": "09:45"
+     }
+    }
+   },
+   {
     "time": "10:02",
-    "kind": "INFO",
-    "symbol": "^NSEI",
-    "msg": "index below its open: longs paused"
+    "kind": "BLOCK",
+    "symbol": "BAJFINANCE",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 1099.1,
+      "stop": 1090.6,
+      "target": 1124.6,
+      "bar": "09:55"
+     }
+    }
    },
    {
-    "time": "11:02",
-    "kind": "INFO",
-    "symbol": "^NSEI",
-    "msg": "index below its open: longs paused"
+    "time": "10:17",
+    "kind": "BLOCK",
+    "symbol": "SBIN",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 1146.25,
+      "stop": 1143.65,
+      "target": 1154.05,
+      "bar": "10:10"
+     }
+    }
    },
    {
-    "time": "12:02",
-    "kind": "INFO",
-    "symbol": "^NSEI",
-    "msg": "index below its open: longs paused"
+    "time": "10:22",
+    "kind": "BLOCK",
+    "symbol": "ADANIPORTS",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 1905.6,
+      "stop": 1896.5,
+      "target": 1932.9,
+      "bar": "10:15"
+     }
+    }
    },
    {
-    "time": "13:02",
-    "kind": "INFO",
-    "symbol": "^NSEI",
-    "msg": "index below its open: longs paused"
+    "time": "10:52",
+    "kind": "BLOCK",
+    "symbol": "LT",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 4161.4,
+      "stop": 4134.0,
+      "target": 4243.6,
+      "bar": "10:45"
+     }
+    }
    },
    {
-    "time": "14:02",
-    "kind": "INFO",
-    "symbol": "^NSEI",
-    "msg": "index below its open: longs paused"
+    "time": "11:37",
+    "kind": "BLOCK",
+    "symbol": "ITC",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 298.35,
+      "stop": 297.75,
+      "target": 300.15,
+      "bar": "11:30"
+     }
+    }
+   },
+   {
+    "time": "12:37",
+    "kind": "BLOCK",
+    "symbol": "ITC",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 299.75,
+      "stop": 298.3,
+      "target": 304.1,
+      "bar": "12:30"
+     }
+    }
+   },
+   {
+    "time": "13:37",
+    "kind": "BLOCK",
+    "symbol": "NTPC",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 321.5,
+      "stop": 320.85,
+      "target": 323.45,
+      "bar": "13:30"
+     }
+    }
+   },
+   {
+    "time": "13:52",
+    "kind": "BLOCK",
+    "symbol": "SBIN",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 1154.0,
+      "stop": 1145.95,
+      "target": 1178.15,
+      "bar": "13:45"
+     }
+    }
+   },
+   {
+    "time": "14:07",
+    "kind": "BLOCK",
+    "symbol": "ICICIBANK",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
+    "data": {
+     "signal": {
+      "entry": 1604.8,
+      "stop": 1595.7,
+      "target": 1632.1,
+      "bar": "14:00"
+     }
+    }
+   },
+   {
+    "time": "15:17",
+    "kind": "EXIT",
+    "symbol": "HINDUNILVR",
+    "msg": "square-off 7 @ 2068.85, net +209.49 (+0.88R, charges 39.01)",
+    "data": {
+     "trade": {
+      "symbol": "HINDUNILVR",
+      "strategy": "orb",
+      "qty": 7,
+      "entry_price": 2033.35,
+      "exit_price": 2068.85,
+      "entry_ts": "2026-11-19T09:40:00+05:30",
+      "exit_ts": "2026-11-19T15:17:26.978785+05:30",
+      "exit_reason": "square-off",
+      "gross_pnl": 248.5,
+      "charges": 39.01,
+      "net_pnl": 209.49,
+      "planned_risk": 238.01,
+      "r_multiple": 0.88
+     },
+     "stop": 2006.0,
+     "target": 2110.4
+    }
+   },
+   {
+    "time": "15:17",
+    "kind": "EXIT",
+    "symbol": "TATASTEEL",
+    "msg": "square-off 123 @ 181.25, net +154.00 (+0.64R, charges 55.10)",
+    "data": {
+     "trade": {
+      "symbol": "TATASTEEL",
+      "strategy": "orb",
+      "qty": 123,
+      "entry_price": 179.55,
+      "exit_price": 181.25,
+      "entry_ts": "2026-11-19T09:40:00+05:30",
+      "exit_ts": "2026-11-19T15:17:26.978785+05:30",
+      "exit_reason": "square-off",
+      "gross_pnl": 209.1,
+      "charges": 55.1,
+      "net_pnl": 154.0,
+      "planned_risk": 241.26,
+      "r_multiple": 0.638
+     },
+     "stop": 178.1,
+     "target": 183.7
+    }
    }
   ],
   "flags": [
    "start",
-   "regime-red:09",
-   "regime-red:10",
-   "regime-red:11",
-   "regime-red:12",
-   "regime-red:13",
-   "regime-red:14"
+   "regime-red:09"
   ],
   "ticks": 72,
-  "last_tick": "2026-11-18T15:27:16.841732+05:30"
+  "last_tick": "2026-11-19T15:27:15.344019+05:30"
  },
  "history": {
   "2026-11-02": {
@@ -109,6 +359,10 @@
   "2026-11-17": {
    "net": 4.68,
    "trades": 2
+  },
+  "2026-11-18": {
+   "net": 0.0,
+   "trades": 0
   }
  }
 }
