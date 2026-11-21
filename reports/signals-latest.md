@@ -1,20 +1,20 @@
 # Signal study
 
-Every signal from 2026-08-18 to 2026-11-13, with no position limits or risk blocks, sized as a fresh account.
-Out-of-sample from 2026-10-22. R is planned risk. A real edge needs the gross interval above the cost of about 0.28R.
+Every signal from 2026-08-25 to 2026-11-20, with no position limits or risk blocks, sized as a fresh account.
+Out-of-sample from 2026-10-28. R is planned risk. A real edge needs the gross interval above the cost of about 0.28R.
 
 | slice | signals | avg gross R | 95% interval | avg net R | exits |
 |---|---|---|---|---|---|
-| all | 593 | -0.205 | -0.267 to -0.144 | -0.483 | square-off 182, stop 346, stop (gap) 3, target 61, target (gap) 1 |
-| in-sample | 383 | -0.237 | -0.310 to -0.164 | -0.519 | square-off 117, stop 225, stop (gap) 2, target 39 |
-| out-of-sample | 210 | -0.148 | -0.259 to -0.037 | -0.419 | square-off 65, stop 121, stop (gap) 1, target 22, target (gap) 1 |
-| strategy: orb | 329 | -0.166 | -0.248 to -0.084 | -0.419 | square-off 141, stop 162, stop (gap) 2, target 23, target (gap) 1 |
-| strategy: vwap_reclaim | 264 | -0.254 | -0.347 to -0.161 | -0.563 | square-off 41, stop 184, stop (gap) 1, target 38 |
-| entry hour: 09 | 142 | -0.039 | -0.186 to +0.107 | -0.284 | square-off 53, stop 73, target 15, target (gap) 1 |
-| entry hour: 10 | 252 | -0.265 | -0.358 to -0.173 | -0.560 | square-off 49, stop 172, stop (gap) 1, target 30 |
-| entry hour: 11 | 103 | -0.234 | -0.370 to -0.097 | -0.517 | square-off 36, stop 55, stop (gap) 1, target 11 |
-| entry hour: 12 | 55 | -0.297 | -0.480 to -0.115 | -0.581 | square-off 17, stop 33, stop (gap) 1, target 4 |
-| entry hour: 13 | 14 | -0.223 | -0.586 to +0.139 | -0.496 | square-off 8, stop 5, target 1 |
-| entry hour: 14 | 27 | -0.214 | -0.363 to -0.065 | -0.487 | square-off 19, stop 8 |
+| all | 647 | -0.167 | -0.227 to -0.106 | -0.445 | square-off 208, stop 361, stop (gap) 3, target 74, target (gap) 1 |
+| in-sample | 409 | -0.232 | -0.303 to -0.161 | -0.515 | square-off 124, stop 240, stop (gap) 3, target 41, target (gap) 1 |
+| out-of-sample | 238 | -0.054 | -0.161 to +0.053 | -0.326 | square-off 84, stop 121, target 33 |
+| strategy: orb | 349 | -0.129 | -0.209 to -0.048 | -0.380 | square-off 159, stop 161, stop (gap) 2, target 26, target (gap) 1 |
+| strategy: vwap_reclaim | 298 | -0.211 | -0.301 to -0.121 | -0.521 | square-off 49, stop 200, stop (gap) 1, target 48 |
+| entry hour: 09 | 149 | -0.023 | -0.166 to +0.120 | -0.266 | square-off 59, stop 74, target 15, target (gap) 1 |
+| entry hour: 10 | 275 | -0.213 | -0.306 to -0.120 | -0.508 | square-off 57, stop 179, stop (gap) 1, target 38 |
+| entry hour: 11 | 114 | -0.196 | -0.332 to -0.060 | -0.484 | square-off 37, stop 61, stop (gap) 1, target 15 |
+| entry hour: 12 | 55 | -0.277 | -0.458 to -0.095 | -0.556 | square-off 19, stop 31, stop (gap) 1, target 4 |
+| entry hour: 13 | 25 | -0.127 | -0.372 to +0.118 | -0.409 | square-off 15, stop 8, target 2 |
+| entry hour: 14 | 29 | -0.173 | -0.329 to -0.018 | -0.441 | square-off 21, stop 8 |
 
 Hour rows were not pre-registered: read them as leads to retest, never as results.
