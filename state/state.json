@@ -1,286 +1,242 @@
 {
  "version": 1,
- "date": "2026-11-25",
- "equity": 47848.94,
+ "date": "2026-11-26",
+ "equity": 47635.52,
  "positions": {},
  "today": {
   "trades": [
    {
-    "symbol": "INFY",
+    "symbol": "POWERGRID",
     "strategy": "orb",
-    "qty": 19,
-    "entry_price": 1149.7,
-    "exit_price": 1140.2,
-    "entry_ts": "2026-11-25T09:35:00+05:30",
-    "exit_ts": "2026-11-25T09:50:00+05:30",
+    "qty": 98,
+    "entry_price": 268.45,
+    "exit_price": 266.6,
+    "entry_ts": "2026-11-26T10:30:00+05:30",
+    "exit_ts": "2026-11-26T12:50:00+05:30",
     "exit_reason": "stop",
-    "gross_pnl": -180.5,
-    "charges": 54.9,
-    "net_pnl": -235.4,
-    "planned_risk": 234.9,
-    "r_multiple": -1.002
+    "gross_pnl": -181.3,
+    "charges": 56.48,
+    "net_pnl": -237.78,
+    "planned_risk": 230.04,
+    "r_multiple": -1.034
    },
    {
-    "symbol": "ICICIBANK",
+    "symbol": "TATASTEEL",
     "strategy": "orb",
-    "qty": 11,
-    "entry_price": 1646.7,
-    "exit_price": 1629.4,
-    "entry_ts": "2026-11-25T09:50:00+05:30",
-    "exit_ts": "2026-11-25T13:00:00+05:30",
-    "exit_reason": "stop",
-    "gross_pnl": -190.3,
-    "charges": 48.9,
-    "net_pnl": -239.2,
-    "planned_risk": 238.82,
-    "r_multiple": -1.002
+    "qty": 132,
+    "entry_price": 162.55,
+    "exit_price": 163.15,
+    "entry_ts": "2026-11-26T10:25:00+05:30",
+    "exit_ts": "2026-11-26T15:17:16.496352+05:30",
+    "exit_reason": "square-off",
+    "gross_pnl": 79.2,
+    "charges": 54.84,
+    "net_pnl": 24.36,
+    "planned_risk": 238.8,
+    "r_multiple": 0.102
    }
   ],
-  "realised": -474.6,
+  "realised": -213.42,
   "entries": 2,
   "symbols": [
-   "INFY",
-   "ICICIBANK"
+   "TATASTEEL",
+   "POWERGRID"
   ],
   "seen": [
-   "INFY|orb",
-   "ICICIBANK|orb",
-   "ITC|orb",
-   "TATASTEEL|orb",
-   "AXISBANK|vwap_reclaim",
-   "HINDUNILVR|orb",
-   "HDFCBANK|vwap_reclaim",
-   "KOTAKBANK|vwap_reclaim",
-   "RELIANCE|vwap_reclaim",
-   "SBIN|vwap_reclaim",
-   "AXISBANK|orb",
-   "NTPC|vwap_reclaim",
-   "BAJFINANCE|vwap_reclaim",
-   "HDFCBANK|orb",
-   "BAJFINANCE|orb",
-   "ULTRACEMCO|orb",
-   "LT|orb",
+   "INFY|vwap_reclaim",
    "SBIN|orb",
-   "ITC|vwap_reclaim",
+   "SUNPHARMA|vwap_reclaim",
    "M&M|vwap_reclaim",
-   "POWERGRID|vwap_reclaim"
+   "ULTRACEMCO|orb",
+   "WIPRO|vwap_reclaim",
+   "TATASTEEL|orb",
+   "JSWSTEEL|orb",
+   "TCS|vwap_reclaim",
+   "POWERGRID|orb",
+   "HINDUNILVR|orb",
+   "ADANIPORTS|orb",
+   "ITC|vwap_reclaim",
+   "KOTAKBANK|vwap_reclaim",
+   "KOTAKBANK|orb",
+   "LT|orb",
+   "ULTRACEMCO|vwap_reclaim",
+   "NTPC|vwap_reclaim",
+   "HINDUNILVR|vwap_reclaim",
+   "HCLTECH|vwap_reclaim"
   ],
   "events": [
    {
     "time": "09:32",
     "kind": "START",
     "symbol": "*",
-    "msg": "engine live, equity 48323.54"
+    "msg": "engine live, equity 47848.94"
    },
    {
-    "time": "09:42",
-    "kind": "ENTRY",
-    "symbol": "INFY",
-    "msg": "orb: buy 19 @ 1149.70, stop 1140.90, target 1173.30, risk 234.90, RS +0.26% (closed 1149.00 above range 1136.20-1145.70 (0.84% wide))",
-    "data": {
-     "signal": {
-      "entry": 1149.0,
-      "stop": 1140.9,
-      "target": 1173.3,
-      "bar": "09:35"
-     },
-     "fill": 1149.7,
-     "entry_ts": "2026-11-25T09:35:00+05:30",
-     "qty": 19,
-     "position_value": 21844.1,
-     "loss_at_stop": 234.9,
-     "charges_at_stop": 54.9,
-     "net_reward_at_target": 393.52,
-     "net_rr": 1.68,
-     "cost_to_risk_pct": 22.7,
-     "limited_by": "max loss per trade (after costs)"
-    }
-   },
-   {
-    "time": "09:50",
-    "kind": "EXIT",
-    "symbol": "INFY",
-    "msg": "stop 19 @ 1140.20, net -235.40 (-1.00R, charges 54.90)",
-    "data": {
-     "trade": {
-      "symbol": "INFY",
-      "strategy": "orb",
-      "qty": 19,
-      "entry_price": 1149.7,
-      "exit_price": 1140.2,
-      "entry_ts": "2026-11-25T09:35:00+05:30",
-      "exit_ts": "2026-11-25T09:50:00+05:30",
-      "exit_reason": "stop",
-      "gross_pnl": -180.5,
-      "charges": 54.9,
-      "net_pnl": -235.4,
-      "planned_risk": 234.9,
-      "r_multiple": -1.002
-     },
-     "stop": 1140.9,
-     "target": 1173.3
-    }
-   },
-   {
-    "time": "09:57",
-    "kind": "ENTRY",
-    "symbol": "ICICIBANK",
-    "msg": "orb: buy 11 @ 1646.70, stop 1630.40, target 1691.60, risk 238.82, RS +1.23% (closed 1645.70 above range 1618.80-1642.00 (1.43% wide))",
-    "data": {
-     "signal": {
-      "entry": 1645.7,
-      "stop": 1630.4,
-      "target": 1691.6,
-      "bar": "09:50"
-     },
-     "fill": 1646.7,
-     "entry_ts": "2026-11-25T09:50:00+05:30",
-     "qty": 11,
-     "position_value": 18113.56,
-     "loss_at_stop": 238.82,
-     "charges_at_stop": 48.9,
-     "net_reward_at_target": 444.14,
-     "net_rr": 1.86,
-     "cost_to_risk_pct": 20.3,
-     "limited_by": "max loss per trade (after costs)"
-    }
+    "time": "09:32",
+    "kind": "INFO",
+    "symbol": "^NSEI",
+    "msg": "index below its open: longs paused"
    },
    {
     "time": "10:02",
+    "kind": "INFO",
+    "symbol": "^NSEI",
+    "msg": "index below its open: longs paused"
+   },
+   {
+    "time": "10:32",
+    "kind": "EXPIRED",
+    "symbol": "SBIN",
+    "msg": "orb signal from 10:05 is 4 bars old"
+   },
+   {
+    "time": "10:32",
+    "kind": "EXPIRED",
+    "symbol": "M&M",
+    "msg": "vwap_reclaim signal from 10:00 is 5 bars old"
+   },
+   {
+    "time": "10:32",
+    "kind": "EXPIRED",
+    "symbol": "ULTRACEMCO",
+    "msg": "orb signal from 10:05 is 4 bars old"
+   },
+   {
+    "time": "10:32",
+    "kind": "EXPIRED",
+    "symbol": "WIPRO",
+    "msg": "vwap_reclaim: price moved 0.36% past the signal"
+   },
+   {
+    "time": "10:32",
+    "kind": "EXPIRED",
+    "symbol": "JSWSTEEL",
+    "msg": "orb signal from 09:50 is 7 bars old"
+   },
+   {
+    "time": "10:32",
     "kind": "BLOCK",
-    "symbol": "ITC",
-    "msg": "orb: size is zero: stop too far for the risk budget",
+    "symbol": "INFY",
+    "msg": "vwap_reclaim: net reward:risk 1.09 below 1.50",
     "data": {
      "signal": {
-      "entry": 306.65,
-      "stop": 303.55,
-      "target": 315.95,
-      "bar": "09:55"
-     }
+      "entry": 1165.5,
+      "stop": 1159.65,
+      "target": 1179.05,
+      "bar": "10:25"
+     },
+     "qty": 24,
+     "position_value": 27988.78,
+     "loss_at_stop": 230.96,
+     "charges_at_stop": 57.08,
+     "net_reward_at_target": 251.2,
+     "net_rr": 1.09,
+     "cost_to_risk_pct": 23.9,
+     "limited_by": "position cap / cash"
     }
    },
    {
-    "time": "10:02",
-    "kind": "BLOCK",
+    "time": "10:32",
+    "kind": "ENTRY",
     "symbol": "TATASTEEL",
-    "msg": "orb: size is zero: stop too far for the risk budget",
+    "msg": "orb: buy 132 @ 162.55, stop 161.25, target 166.05, risk 238.80, RS +1.01% (closed 162.46 above range 160.26-162.30 (1.27% wide))",
     "data": {
      "signal": {
-      "entry": 163.8,
+      "entry": 162.45,
       "stop": 161.25,
-      "target": 171.45,
-      "bar": "09:55"
-     }
-    }
-   },
-   {
-    "time": "10:12",
-    "kind": "BLOCK",
-    "symbol": "HINDUNILVR",
-    "msg": "orb: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 2069.1,
-      "stop": 2041.5,
-      "target": 2151.9,
-      "bar": "10:05"
-     }
-    }
-   },
-   {
-    "time": "10:12",
-    "kind": "BLOCK",
-    "symbol": "AXISBANK",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 1421.0,
-      "stop": 1417.5,
-      "target": 1431.5,
-      "bar": "10:05"
-     }
-    }
-   },
-   {
-    "time": "10:17",
-    "kind": "BLOCK",
-    "symbol": "HDFCBANK",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 845.75,
-      "stop": 840.5,
-      "target": 861.5,
-      "bar": "10:10"
-     }
-    }
-   },
-   {
-    "time": "10:17",
-    "kind": "BLOCK",
-    "symbol": "KOTAKBANK",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 511.95,
-      "stop": 509.6,
-      "target": 519.0,
-      "bar": "10:10"
-     }
-    }
-   },
-   {
-    "time": "10:22",
-    "kind": "BLOCK",
-    "symbol": "RELIANCE",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 1380.7,
-      "stop": 1370.05,
-      "target": 1412.65,
-      "bar": "10:15"
-     }
+      "target": 166.05,
+      "bar": "10:25"
+     },
+     "fill": 162.55,
+     "entry_ts": "2026-11-26T10:25:00+05:30",
+     "qty": 132,
+     "position_value": 21456.27,
+     "loss_at_stop": 238.8,
+     "charges_at_stop": 54.76,
+     "net_reward_at_target": 407.38,
+     "net_rr": 1.71,
+     "cost_to_risk_pct": 22.9,
+     "limited_by": "max loss per trade (after costs)"
     }
    },
    {
     "time": "10:32",
     "kind": "BLOCK",
-    "symbol": "SBIN",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
+    "symbol": "SUNPHARMA",
+    "msg": "vwap_reclaim: net reward:risk 1.22 below 1.50",
     "data": {
      "signal": {
-      "entry": 1140.95,
-      "stop": 1137.05,
-      "target": 1152.65,
+      "entry": 1913.9,
+      "stop": 1906.3,
+      "target": 1936.7,
       "bar": "10:25"
-     }
+     },
+     "qty": 13,
+     "position_value": 24895.63,
+     "loss_at_stop": 184.6,
+     "charges_at_stop": 56.0,
+     "net_reward_at_target": 225.36,
+     "net_rr": 1.22,
+     "cost_to_risk_pct": 23.4,
+     "limited_by": "position cap / cash"
+    }
+   },
+   {
+    "time": "10:37",
+    "kind": "BLOCK",
+    "symbol": "TCS",
+    "msg": "vwap_reclaim: net reward:risk 1.06 below 1.50",
+    "data": {
+     "signal": {
+      "entry": 2563.6,
+      "stop": 2555.15,
+      "target": 2588.95,
+      "bar": "10:30"
+     },
+     "qty": 10,
+     "position_value": 25651.38,
+     "loss_at_stop": 171.48,
+     "charges_at_stop": 56.27,
+     "net_reward_at_target": 181.75,
+     "net_rr": 1.06,
+     "cost_to_risk_pct": 23.5,
+     "limited_by": "position cap / cash"
+    }
+   },
+   {
+    "time": "10:37",
+    "kind": "ENTRY",
+    "symbol": "POWERGRID",
+    "msg": "orb: buy 98 @ 268.45, stop 266.80, target 272.60, risk 230.04, RS +0.00% (closed 268.25 above range 265.70-267.90 (0.83% wide))",
+    "data": {
+     "signal": {
+      "entry": 268.25,
+      "stop": 266.8,
+      "target": 272.6,
+      "bar": "10:30"
+     },
+     "fill": 268.45,
+     "entry_ts": "2026-11-26T10:30:00+05:30",
+     "qty": 98,
+     "position_value": 26304.27,
+     "loss_at_stop": 230.04,
+     "charges_at_stop": 56.48,
+     "net_reward_at_target": 353.88,
+     "net_rr": 1.54,
+     "cost_to_risk_pct": 23.6,
+     "limited_by": "position cap / cash"
     }
    },
    {
     "time": "10:42",
     "kind": "BLOCK",
-    "symbol": "AXISBANK",
-    "msg": "orb: size is zero: stop too far for the risk budget",
+    "symbol": "HINDUNILVR",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
     "data": {
      "signal": {
-      "entry": 1433.9,
-      "stop": 1417.75,
-      "target": 1482.35,
-      "bar": "10:35"
-     }
-    }
-   },
-   {
-    "time": "10:42",
-    "kind": "BLOCK",
-    "symbol": "NTPC",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 316.2,
-      "stop": 314.75,
-      "target": 320.55,
+      "entry": 2150.5,
+      "stop": 2138.0,
+      "target": 2188.0,
       "bar": "10:35"
      }
     }
@@ -288,110 +244,130 @@
    {
     "time": "10:52",
     "kind": "BLOCK",
-    "symbol": "BAJFINANCE",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
+    "symbol": "ADANIPORTS",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
     "data": {
      "signal": {
-      "entry": 1127.5,
-      "stop": 1123.0,
-      "target": 1141.0,
+      "entry": 1924.4,
+      "stop": 1914.0,
+      "target": 1955.6,
       "bar": "10:45"
-     }
-    }
-   },
-   {
-    "time": "11:07",
-    "kind": "BLOCK",
-    "symbol": "BAJFINANCE",
-    "msg": "orb: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 1137.1,
-      "stop": 1125.6,
-      "target": 1171.6,
-      "bar": "11:00"
-     }
-    }
-   },
-   {
-    "time": "11:07",
-    "kind": "BLOCK",
-    "symbol": "HDFCBANK",
-    "msg": "orb: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 848.85,
-      "stop": 840.85,
-      "target": 872.85,
-      "bar": "11:00"
      }
     }
    },
    {
     "time": "11:17",
     "kind": "BLOCK",
-    "symbol": "ULTRACEMCO",
-    "msg": "orb: size is zero: stop too far for the risk budget",
+    "symbol": "ITC",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: no cash or position cap left for one share",
     "data": {
      "signal": {
-      "entry": 12820.0,
-      "stop": 12739.0,
-      "target": 13063.0,
+      "entry": 309.45,
+      "stop": 308.6,
+      "target": 312.0,
       "bar": "11:10"
      }
     }
    },
    {
     "time": "11:37",
+    "kind": "INFO",
+    "symbol": "^NSEI",
+    "msg": "index below its open: longs paused"
+   },
+   {
+    "time": "11:42",
+    "kind": "BLOCK",
+    "symbol": "KOTAKBANK",
+    "msg": "vwap_reclaim: max open positions (2) reached; size is zero: no cash or position cap left for one share",
+    "data": {
+     "signal": {
+      "entry": 508.45,
+      "stop": 506.85,
+      "target": 513.25,
+      "bar": "11:35"
+     }
+    }
+   },
+   {
+    "time": "12:02",
+    "kind": "BLOCK",
+    "symbol": "KOTAKBANK",
+    "msg": "orb: max open positions (2) reached; size is zero: no cash or position cap left for one share",
+    "data": {
+     "signal": {
+      "entry": 510.5,
+      "stop": 508.15,
+      "target": 517.55,
+      "bar": "11:55"
+     }
+    }
+   },
+   {
+    "time": "12:12",
     "kind": "BLOCK",
     "symbol": "LT",
-    "msg": "orb: size is zero: stop too far for the risk budget",
+    "msg": "orb: max open positions (2) reached; size is zero: stop too far for the risk budget",
     "data": {
      "signal": {
-      "entry": 4168.2,
-      "stop": 4147.85,
-      "target": 4229.25,
-      "bar": "11:30"
+      "entry": 4156.9,
+      "stop": 4133.85,
+      "target": 4226.05,
+      "bar": "12:05"
      }
     }
    },
    {
-    "time": "11:47",
-    "kind": "BLOCK",
-    "symbol": "SBIN",
-    "msg": "orb: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 1149.2,
-      "stop": 1139.75,
-      "target": 1177.55,
-      "bar": "11:40"
-     }
-    }
-   },
-   {
-    "time": "13:00",
+    "time": "12:50",
     "kind": "EXIT",
-    "symbol": "ICICIBANK",
-    "msg": "stop 11 @ 1629.40, net -239.20 (-1.00R, charges 48.90)",
+    "symbol": "POWERGRID",
+    "msg": "stop 98 @ 266.60, net -237.78 (-1.03R, charges 56.48)",
     "data": {
      "trade": {
-      "symbol": "ICICIBANK",
+      "symbol": "POWERGRID",
       "strategy": "orb",
-      "qty": 11,
-      "entry_price": 1646.7,
-      "exit_price": 1629.4,
-      "entry_ts": "2026-11-25T09:50:00+05:30",
-      "exit_ts": "2026-11-25T13:00:00+05:30",
+      "qty": 98,
+      "entry_price": 268.45,
+      "exit_price": 266.6,
+      "entry_ts": "2026-11-26T10:30:00+05:30",
+      "exit_ts": "2026-11-26T12:50:00+05:30",
       "exit_reason": "stop",
-      "gross_pnl": -190.3,
-      "charges": 48.9,
-      "net_pnl": -239.2,
-      "planned_risk": 238.82,
-      "r_multiple": -1.002
+      "gross_pnl": -181.3,
+      "charges": 56.48,
+      "net_pnl": -237.78,
+      "planned_risk": 230.04,
+      "r_multiple": -1.034
      },
-     "stop": 1630.4,
-     "target": 1691.6
+     "stop": 266.8,
+     "target": 272.6
+    }
+   },
+   {
+    "time": "13:02",
+    "kind": "BLOCK",
+    "symbol": "ULTRACEMCO",
+    "msg": "vwap_reclaim: daily loss limit: no room left (lost 237.78, open risk 238.80, limit 476.11)",
+    "data": {
+     "signal": {
+      "entry": 12744.0,
+      "stop": 12715.0,
+      "target": 12831.0,
+      "bar": "12:55"
+     }
+    }
+   },
+   {
+    "time": "13:12",
+    "kind": "BLOCK",
+    "symbol": "NTPC",
+    "msg": "vwap_reclaim: daily loss limit: no room left (lost 237.78, open risk 238.80, limit 476.11)",
+    "data": {
+     "signal": {
+      "entry": 320.15,
+      "stop": 319.25,
+      "target": 322.85,
+      "bar": "13:05"
+     }
     }
    },
    {
@@ -401,54 +377,75 @@
     "msg": "index below its open: longs paused"
    },
    {
-    "time": "13:27",
+    "time": "13:22",
     "kind": "BLOCK",
-    "symbol": "ITC",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
+    "symbol": "HCLTECH",
+    "msg": "vwap_reclaim: daily loss limit: no room left (lost 237.78, open risk 238.80, limit 476.11)",
     "data": {
      "signal": {
-      "entry": 308.95,
-      "stop": 307.75,
-      "target": 312.55,
-      "bar": "13:20"
+      "entry": 1417.1,
+      "stop": 1410.4,
+      "target": 1437.2,
+      "bar": "13:15"
+     }
+    }
+   },
+   {
+    "time": "13:22",
+    "kind": "BLOCK",
+    "symbol": "HINDUNILVR",
+    "msg": "vwap_reclaim: daily loss limit: no room left (lost 237.78, open risk 238.80, limit 476.11)",
+    "data": {
+     "signal": {
+      "entry": 2149.1,
+      "stop": 2144.6,
+      "target": 2162.6,
+      "bar": "13:15"
      }
     }
    },
    {
     "time": "14:02",
-    "kind": "BLOCK",
-    "symbol": "M&M",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
-    "data": {
-     "signal": {
-      "entry": 3486.4,
-      "stop": 3477.35,
-      "target": 3513.55,
-      "bar": "13:55"
-     }
-    }
+    "kind": "INFO",
+    "symbol": "^NSEI",
+    "msg": "index below its open: longs paused"
    },
    {
-    "time": "14:42",
-    "kind": "BLOCK",
-    "symbol": "POWERGRID",
-    "msg": "vwap_reclaim: size is zero: stop too far for the risk budget",
+    "time": "15:17",
+    "kind": "EXIT",
+    "symbol": "TATASTEEL",
+    "msg": "square-off 132 @ 163.15, net +24.36 (+0.10R, charges 54.84)",
     "data": {
-     "signal": {
-      "entry": 265.35,
-      "stop": 264.2,
-      "target": 268.8,
-      "bar": "14:35"
-     }
+     "trade": {
+      "symbol": "TATASTEEL",
+      "strategy": "orb",
+      "qty": 132,
+      "entry_price": 162.55,
+      "exit_price": 163.15,
+      "entry_ts": "2026-11-26T10:25:00+05:30",
+      "exit_ts": "2026-11-26T15:17:16.496352+05:30",
+      "exit_reason": "square-off",
+      "gross_pnl": 79.2,
+      "charges": 54.84,
+      "net_pnl": 24.36,
+      "planned_risk": 238.8,
+      "r_multiple": 0.102
+     },
+     "stop": 161.25,
+     "target": 166.05
     }
    }
   ],
   "flags": [
    "start",
-   "regime-red:13"
+   "regime-red:09",
+   "regime-red:10",
+   "regime-red:11",
+   "regime-red:13",
+   "regime-red:14"
   ],
   "ticks": 72,
-  "last_tick": "2026-11-25T15:27:16.264388+05:30"
+  "last_tick": "2026-11-26T15:27:15.510526+05:30"
  },
  "history": {
   "2026-11-02": {
@@ -510,6 +507,10 @@
   "2026-11-23": {
    "net": 0.0,
    "trades": 0
+  },
+  "2026-11-25": {
+   "net": -474.6,
+   "trades": 2
   }
  }
 }
