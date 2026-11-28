@@ -2,12 +2,12 @@
 
 Train on 30 sessions, pick the best variant by avg R, trade it on the next 10, roll on. Net of costs.
 
-**Verdict: FAILS the gate: out-of-sample expectancy is -70.80 per trade after costs.**
+**Verdict: FAILS the gate: out-of-sample expectancy is -69.23 per trade after costs.**
 
 | test window | picked | train trades | train avg R | test trades | test ₹/trade | test avg R |
 |---|---|---|---|---|---|---|
-| 2026-10-08 to 2026-10-22 | orb_low_stop | 45 | -0.355 | 14 | -85.41 | -0.382 |
-| 2026-10-23 to 2026-11-05 | vwap_only | 20 | -0.431 | 10 | -59.73 | -0.244 |
-| 2026-11-06 to 2026-11-20 | orb_low_stop | 50 | -0.242 | 16 | -64.92 | -0.314 |
+| 2026-10-14 to 2026-10-28 | target_2r | 13 | -0.362 | 7 | -95.81 | -0.400 |
+| 2026-10-29 to 2026-11-12 | orb_low_stop | 46 | -0.371 | 19 | -30.76 | -0.155 |
+| 2026-11-13 to 2026-11-27 | baseline | 48 | -0.216 | 14 | -108.16 | -0.519 |
 
-All unseen trades: 40, net ₹-2831.85, avg -0.320R.
+All unseen trades: 40, net ₹-2769.34, avg -0.325R.
